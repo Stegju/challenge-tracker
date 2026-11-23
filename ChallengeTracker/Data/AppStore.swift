@@ -174,22 +174,25 @@ final class AppStore {
     }
 
     func toggleCounted(exercise: String, month: Int) {
-        mutate("Toggled counted \(exercise)") { s, _ in
-            s.update(month) { slot in
-                let n = MotraParser.normalize(exercise)
-                if let i = slot.extraCountedExercises.firstIndex(where: { MotraParser.normalize($0) == n }) {
-                    slot.extraCountedExercises.remove(at: i)
-                } else {
-                    slot.extraCountedExercises.append(exercise)
-                }
-            }
+        var names = countedExercises(month: month)
+        let n = MotraParser.normalize(exercise)
+        if let i = names.firstIndex(where: { MotraParser.normalize($0) == n }) {
+            names.remove(at: i)
+        } else {
+            names.append(exercise)
+        }
+        setCounted(month: month, names: names)
+    }
+
+    func setCounted(month: Int, names: [String]) {
+        mutate("Counted exercises \(month): \(names.joined(separator: ", "))") { s, e in
+            try YearActions.setCounted(&s, month: month, names: names, engine: e)
         }
     }
 
-    /// Catalogue counted exercises plus the month's extras.
+    /// Exercises that count this month (chosen ones, or catalogue defaults).
     func countedExercises(month: Int) -> [String] {
-        let r = engine.resolve(month)
-        return (r.challenge?.countedExercises ?? []) + r.slot.extraCountedExercises
+        engine.countedExercises(month)
     }
 
     func resetYear() {

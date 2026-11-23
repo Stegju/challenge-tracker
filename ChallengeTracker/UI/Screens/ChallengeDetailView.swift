@@ -16,6 +16,7 @@ struct ChallengeDetailView: View {
     @State private var entryDate = Date()
     @State private var finalizeStage = 0
     @State private var lockInArmed = false
+    @State private var showCountedPicker = false
     @State private var didInit = false
 
     enum EditField { case baseline, target }
@@ -30,6 +31,9 @@ struct ChallengeDetailView: View {
                 header(r)
                 if let ch = r.challenge {
                     challengeCard(r, ch, rules: rules, now: now)
+                    if Self.usesExercises(ch) {
+                        countedCard(r)
+                    }
                     if r.isLocked && !r.isForfeit {
                         entriesCard(r, ch, now: now)
                         resultCard(r, ch, engine: e)
@@ -50,6 +54,7 @@ struct ChallengeDetailView: View {
         .scrollIndicators(.hidden)
         .scrollDismissesKeyboard(.interactively)
         .screen()
+        .sheet(isPresented: $showCountedPicker) { CountedExercisesSheet(month: month) }
         .onAppear {
             if !didInit {
                 entryDate = min(store.now, rules.monthEnd(month).addingTimeInterval(-60))
@@ -227,6 +232,50 @@ struct ChallengeDetailView: View {
         }
         return "Baseline and target locked at the end of \(lastDay)."
             + (r.baseline == nil || r.target == nil ? " One was missing, so this month scores 0." : "")
+    }
+
+    // MARK: Counted exercises
+
+    /// Challenges whose entries can come from sets in imported workouts.
+    static func usesExercises(_ ch: Challenge) -> Bool {
+        ch.metric == .e1rm || (ch.metric == .number && ch.unit.lowercased().contains("rep"))
+    }
+
+    private func countedCard(_ r: ResolvedSlot) -> some View {
+        let names = store.countedExercises(month: month)
+        return VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Lbl("COUNTS THIS MONTH")
+                Spacer()
+                if !r.isFinal {
+                    Button("CHOOSE") { showCountedPicker = true }
+                        .font(.label(10)).tracking(1)
+                        .foregroundStyle(Palette.lime)
+                        .padding(.horizontal, 10)
+                        .frame(minHeight: 32)
+                        .innerBorder(Palette.lime)
+                        .buttonStyle(.plain)
+                }
+            }
+            if names.isEmpty {
+                Text("Nothing yet. Choose the exercise from your workouts.")
+                    .font(.vt(19)).foregroundStyle(Palette.plateYellow)
+            } else {
+                ForEach(names, id: \.self) { n in
+                    HStack(spacing: 8) {
+                        Rectangle().fill(Palette.lime).frame(width: 8, height: 8)
+                        Text(n).font(.vt(21)).lineLimit(1)
+                    }
+                }
+            }
+            Text(ValueFormat.metricLabel(r.challenge!).hasPrefix("E1RM")
+                 ? "Each imported workout becomes one entry: its set with the highest 1RM estimate."
+                 : "Each imported workout becomes one entry: its best working set.")
+                .font(.vt(17)).foregroundStyle(Palette.muted)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(16)
+        .panel()
     }
 
     // MARK: Entries
@@ -432,6 +481,102 @@ struct PulsingButton: View {
             Button(title, action: action)
                 .buttonStyle(PrimaryButtonStyle(fill: Palette.plateYellow))
                 .opacity(on ? 1 : 0.6)
+        }
+    }
+}
+
+/// Pick the exercises that count for a month, from names seen in imported workouts or typed in.
+struct CountedExercisesSheet: View {
+    var month: Int
+    @Environment(AppStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+    @State private var selected: [String] = []
+    @State private var custom = ""
+    @State private var didLoad = false
+
+    var body: some View {
+        let known = store.engine.knownExercises
+        let all = merged(known)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text("COUNTS IN \(YearConfig.name(month))").font(.heading(18)).foregroundStyle(.white)
+                    Spacer()
+                    Button("CANCEL") { dismiss() }.buttonStyle(.plain).font(.label(11)).foregroundStyle(Palette.muted)
+                }
+                Text("Tap the exercises whose sets count for this month. Workouts you already imported are re-read straight away.")
+                    .font(.vt(18)).foregroundStyle(Palette.muted)
+                    .fixedSize(horizontal: false, vertical: true)
+                if all.isEmpty {
+                    Text("No imported workouts yet. Type the exercise name exactly as Motra writes it.")
+                        .font(.vt(19)).foregroundStyle(Palette.plateYellow)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                VStack(spacing: 4) {
+                    ForEach(all, id: \.self) { name in
+                        let on = isOn(name)
+                        Button {
+                            toggle(name)
+                        } label: {
+                            HStack {
+                                Text(name).font(.vt(21)).foregroundStyle(on ? Palette.lime : Palette.text).lineLimit(1)
+                                Spacer()
+                                Lbl(on ? "COUNTS" : "", color: Palette.lime, size: 9)
+                            }
+                            .padding(.horizontal, 12)
+                            .frame(minHeight: 44)
+                            .notched(fill: on ? Palette.lime.opacity(0.08) : Palette.panel, edge: on ? Palette.lime : Palette.panelEdge)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                Lbl("OR TYPE A NAME")
+                HStack(spacing: 6) {
+                    PixelField(placeholder: "e.g. Barbell Bench Press", text: $custom, keyboard: .default, fontSize: 22)
+                    Button("ADD") {
+                        let t = custom.trimmingCharacters(in: .whitespaces)
+                        if !t.isEmpty && !isOn(t) { selected.append(t) }
+                        custom = ""
+                    }
+                    .buttonStyle(SecondaryButtonStyle(edge: Palette.lime, textColor: Palette.lime))
+                    .frame(width: 80)
+                }
+                Button("SAVE") {
+                    store.setCounted(month: month, names: selected)
+                    dismiss()
+                }
+                .buttonStyle(PrimaryButtonStyle())
+            }
+            .padding(16)
+        }
+        .foregroundStyle(Palette.text)
+        .background(Palette.background.ignoresSafeArea())
+        .onAppear {
+            if !didLoad {
+                selected = store.countedExercises(month: month)
+                didLoad = true
+            }
+        }
+    }
+
+    private func merged(_ known: [String]) -> [String] {
+        var out = known
+        for s in selected where !out.contains(where: { MotraParser.normalize($0) == MotraParser.normalize(s) }) {
+            out.insert(s, at: 0)
+        }
+        return out
+    }
+
+    private func isOn(_ name: String) -> Bool {
+        selected.contains { MotraParser.normalize($0) == MotraParser.normalize(name) }
+    }
+
+    private func toggle(_ name: String) {
+        let n = MotraParser.normalize(name)
+        if let i = selected.firstIndex(where: { MotraParser.normalize($0) == n }) {
+            selected.remove(at: i)
+        } else {
+            selected.append(name)
         }
     }
 }

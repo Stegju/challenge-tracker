@@ -208,6 +208,28 @@ struct YearEngine {
         return sums.mapValues { $0.0 / Double($0.1) }
     }
 
+    /// Exercises whose sets feed this month's entries: the month's own choice, else (for a redo)
+    /// the original month's choice, else the catalogue defaults plus any extras.
+    func countedExercises(_ month: Int) -> [String] {
+        let slot = state.slot(month)
+        if let o = slot.countedOverride { return o }
+        if slot.kind == .redo, let src = slot.sourceMonth, let o = state.slot(src).countedOverride { return o }
+        return (resolve(month).challenge?.countedExercises ?? []) + slot.extraCountedExercises
+    }
+
+    /// Exercise names seen in saved workouts, most frequent first (one spelling per normalized name).
+    var knownExercises: [String] {
+        var counts: [String: (name: String, n: Int)] = [:]
+        for w in state.workouts {
+            for ex in w.exercises ?? [] {
+                let key = MotraParser.normalize(ex.name)
+                let cur = counts[key] ?? (ex.name, 0)
+                counts[key] = (cur.name, cur.n + 1)
+            }
+        }
+        return counts.values.sorted { $0.n != $1.n ? $0.n > $1.n : $0.name < $1.name }.map(\.name)
+    }
+
     func canFinalize(_ month: Int) -> Bool {
         let r = resolve(month)
         return r.isLocked && !r.isFinal && !r.isForfeit && r.best != nil && r.baseline != nil && r.target != nil
@@ -313,6 +335,41 @@ enum YearActions {
             e.workoutId = w.id
             let alreadyFinalCopy = state.entries.contains { $0.workoutId == w.id }
             if !alreadyFinalCopy { try addEntry(&state, e, engine: engine) }
+        }
+    }
+
+    /// Chooses which exercises count this month, then refills the entries that came from
+    /// imported workouts so earlier imports pick up the new choice.
+    static func setCounted(_ state: inout YearState, month: Int, names: [String], engine: YearEngine) throws {
+        guard !engine.resolve(month).isFinal else { throw ActionError.locked }
+        var seen = Set<String>()
+        let clean = names.map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty && seen.insert(MotraParser.normalize($0)).inserted }
+        state.update(month) { s in
+            s.countedOverride = clean
+            s.extraCountedExercises = []
+        }
+        rebuildImportedEntries(&state, month: month, engine: engine)
+    }
+
+    /// Recomputes one entry per imported workout in the month from its best counted set.
+    static func rebuildImportedEntries(_ state: inout YearState, month: Int, engine: YearEngine) {
+        let e = YearEngine(state: state, catalogue: engine.catalogue, rules: engine.rules, now: engine.now)
+        let r = e.resolve(month)
+        guard r.isLocked, !r.isFinal, !r.isForfeit, let ch = r.challenge else { return }
+        let counted = e.countedExercises(month)
+        let start = e.rules.lockDate(month), end = e.rules.monthEnd(month)
+        state.entries.removeAll { $0.month == month && $0.workoutId != nil }
+        for i in state.workouts.indices {
+            let w = state.workouts[i]
+            guard let exercises = w.exercises, w.date >= start, w.date < end, w.date <= e.now else { continue }
+            let parsed = ParsedWorkout(name: w.title ?? "", date: w.date, durationMinutes: w.durationMinutes,
+                                       volumeKg: nil, kcal: nil, exercises: exercises)
+            if let sug = MotraParser.suggestedValue(workout: parsed, challenge: ch, counted: counted) {
+                state.entries.append(Entry(month: month, date: w.date, value: sug.value, weightKg: sug.weightKg,
+                                           reps: sug.reps, source: w.source, workoutId: w.id))
+                state.workouts[i].kind = .challenge
+            }
         }
     }
 

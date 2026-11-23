@@ -97,6 +97,8 @@ struct Slot: Codable, Equatable, Identifiable, Sendable {
     var extraCountedExercises: [String] = []
     /// Set when baseline and target were locked in by hand before the window closed.
     var setupLockedAt: Date?
+    /// Exercises that count this month, chosen by hand. nil = catalogue defaults (+ extras).
+    var countedOverride: [String]?
 
     var id: Int { month }
 
@@ -108,7 +110,7 @@ struct Slot: Codable, Equatable, Identifiable, Sendable {
 
     // Tolerant decoding so older backups keep loading when fields are added.
     enum CodingKeys: String, CodingKey {
-        case month, kind, challengeId, snapshot, sourceMonth, baseline, target, finalResult, isFinal, extraCountedExercises, setupLockedAt
+        case month, kind, challengeId, snapshot, sourceMonth, baseline, target, finalResult, isFinal, extraCountedExercises, setupLockedAt, countedOverride
     }
 
     init(from decoder: Decoder) throws {
@@ -124,6 +126,7 @@ struct Slot: Codable, Equatable, Identifiable, Sendable {
         isFinal = try c.decodeIfPresent(Bool.self, forKey: .isFinal) ?? false
         extraCountedExercises = try c.decodeIfPresent([String].self, forKey: .extraCountedExercises) ?? []
         setupLockedAt = try c.decodeIfPresent(Date.self, forKey: .setupLockedAt)
+        countedOverride = try c.decodeIfPresent([String].self, forKey: .countedOverride)
     }
 }
 

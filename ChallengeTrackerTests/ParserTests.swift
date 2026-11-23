@@ -262,3 +262,46 @@ struct ImportTests {
         #expect(s.entries[0].workoutId == s.workouts[0].id)
     }
 }
+
+@MainActor
+struct CountedChoiceTests {
+    @Test func choosingAnExerciseRefillsEntriesFromEarlierImports() throws {
+        var s = T.fresh()
+        T.put(&s, 2, "bench-e1rm", b: 90, t: 100)
+        let w = Workout(date: T.d(2, 10, 7), kind: .other, source: .motra, title: "Push",
+                        exercises: [ParsedExercise(name: "Barbell Bench Press", sets: [
+                            ParsedSet(index: 0, setType: .warmup, reps: 10, weightKg: 60),
+                            ParsedSet(index: 1, setType: .normal, reps: 5, weightKg: 90),
+                            ParsedSet(index: 2, setType: .normal, reps: 3, weightKg: 95)])])
+        let e1 = T.engine(s, T.d(2, 12))
+        try YearActions.importWorkout(&s, workout: w, entry: nil, engine: e1)
+        #expect(s.entries.isEmpty)   // "Barbell Bench Press" isn't the catalogue's "bench press"
+
+        let e2 = T.engine(s, T.d(2, 12))
+        #expect(e2.knownExercises == ["Barbell Bench Press"])
+        try YearActions.setCounted(&s, month: 2, names: ["Barbell Bench Press"], engine: e2)
+        #expect(s.entries.count == 1)
+        #expect(s.entries[0].value == 105)
+        #expect(s.entries[0].workoutId == w.id)
+        #expect(s.workouts[0].kind == .challenge)
+        #expect(T.engine(s, T.d(2, 12)).countedExercises(2) == ["Barbell Bench Press"])
+
+        // Un-choosing removes the imported entry again; manual entries stay.
+        s.entries.append(Entry(month: 2, date: T.d(2, 11), value: 98))
+        let e3 = T.engine(s, T.d(2, 12))
+        try YearActions.setCounted(&s, month: 2, names: [], engine: e3)
+        #expect(s.entries.map(\.value) == [98])
+    }
+
+    @Test func redoInheritsTheOriginalChoice() {
+        var s = T.fresh()
+        T.put(&s, 2, "bench-e1rm", b: 90, t: 100)
+        s.update(2) { $0.countedOverride = ["Barbell Bench Press"] }
+        s.update(5) { slot in
+            slot.kind = .redo
+            slot.challengeId = "bench-e1rm"
+            slot.sourceMonth = 2
+        }
+        #expect(T.engine(s, T.d(5, 3)).countedExercises(5) == ["Barbell Bench Press"])
+    }
+}
