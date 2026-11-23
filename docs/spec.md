@@ -99,6 +99,10 @@ $$x_t = a_t + 0.25\, g_t, \qquad m_t = 0.3\, x_t + 0.7\, m_{t-1}, \qquad m_0 = 0
 
 All screens: dark pixel-arcade gym look (see design README). Tab bar: Home, Year, Stats, Import, Setup. Challenge detail, Pick and Exercises are pushed screens.
 
+**Countdown (Home before 1 Jan 2027)**: neon 2027 sign, live countdown (days : hours : min : sec), mascot, a January card (CHOOSE / EDIT JANUARY, with baseline and target tiles) so January is set before it locks, the December boss card, "+ LOG WORKOUT", and ENTER TEST MODE.
+
+**Test mode**: a separate demo year (sandbox store) at a pretend date, default 14 Mar 2027, pre-filled like the artboards (Jan 5K 81, Feb bench 120, Mar pull-ups live at 50). Everything can be tapped, logged and finalized; the real year is never touched. A yellow banner on every screen shows the pretend date and EXIT. Setup has the switch, the date and REFILL DEMO DATA. Widget and notifications always use the real year.
+
 **Home** (`Main.dc.html`)
 - Top row: total (`201/1000`), flickering neon "2027" sign (placeholder text; app has no name yet), redo count `0/2` with two outline pips.
 - Month strip: 12 cells. Done = lime fill, current = lime outline pulsing, open = dim outline, December = red outline with glow. No legend.
@@ -141,7 +145,9 @@ All screens: dark pixel-arcade gym look (see design README). Tab bar: Home, Year
 
 Until HealthKit exists (v1), "other workouts" for the This week panel and momentum are logged manually with a quick "+ workout" action (type optional).
 
-## 9. Data model (SwiftData, iOS 26+)
+## 9. Data model (iOS 26+)
+
+Stored as Codable JSON files in the App Group container (`year2027.json`, `sandbox2027.json`, `settings.json`, `widget.json`) rather than SwiftData: one small document a year, tolerant decoding instead of schema migrations, and the backup file is the same format. Types live in `Core/Model.swift`.
 
 Derived, never stored: scores, totals, plates, momentum, mood.
 
@@ -162,6 +168,11 @@ Derived, never stored: scores, totals, plates, momentum, mood.
 **Later:** iCloud sync, lock screen widgets, Watch complication, Live Activity for race day.
 
 ## 11. Open questions
+
+- [ ] Baseline still blank after day 3: currently the month can't score (shows 0 and can't be finalized). Forfeit rule 5 only names challenge and target.
+- [ ] Momentum: with the activity cap at 1.1 and 0.05 hysteresis, 4 sessions a week keeps "on fire" indefinitely after one new best (m settles at 1.10, exit needs < 1.10). Dropping to 3 a week returns to pumped in about a week. Tune `MomentumConfig` if that's wrong.
+- [ ] Logging an entry also logs a challenge session for that day (if none yet). Confirm that's wanted.
+- [ ] Motra parser is built from the format described in section 8, not a real export. Paste a real one into a test.
 
 - [ ] Weekly dose per challenge (all placeholders at 3 sessions). The cut needs a different dose unit, e.g. days on plan or weigh-ins.
 - [ ] Murph standard: vest or not, partitioned or not.
