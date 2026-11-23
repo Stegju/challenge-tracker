@@ -114,7 +114,7 @@ enum MotraParser {
         let words = s.split(separator: " ").map(String.init)
         // "pull ups" → "pull up", "push-ups" → "push up"
         var out = words
-        if let lastWord = out.last, lastWord.count > 3, lastWord.hasSuffix("s"), !lastWord.hasSuffix("ss") {
+        if let lastWord = out.last, lastWord.count >= 3, lastWord.hasSuffix("s"), !lastWord.hasSuffix("ss") {
             out[out.count - 1] = String(lastWord.dropLast())
         }
         return out.joined(separator: " ")

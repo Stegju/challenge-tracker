@@ -42,7 +42,11 @@ jobs:
             -destination "id=${{ steps.sim.outputs.udid }}" \
             CODE_SIGNING_ALLOWED=NO \
             | tee xcodebuild.log | grep -E "error:|warning: unre|Test Suite|Executed|BUILD|\*\*" || true
-          grep -q "\*\* TEST SUCCEEDED \*\*" xcodebuild.log
+          if ! grep -q "\*\* TEST SUCCEEDED \*\*" xcodebuild.log; then
+            echo "---- failures ----"
+            grep -E "✘|recorded an issue|error:|Expectation failed|failed after|Failing tests|^\s+[A-Za-z]+Tests" xcodebuild.log | sort -u | head -300
+            exit 1
+          fi
 
       - name: Upload log on failure
         if: failure()

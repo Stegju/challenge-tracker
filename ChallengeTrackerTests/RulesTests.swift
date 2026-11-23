@@ -68,7 +68,7 @@ struct EngineTests {
         #expect(e.resolve(1).isForfeit)
         #expect(e.resolve(1).score == 0)
         #expect(e.resolve(2).isForfeit)
-        #expect(!e.resolve(3).isForfeit)
+        #expect(!e.resolve(4).isForfeit)   // April has not locked yet
     }
 
     @Test func liveScoreIsNotInTotalUntilFinal() {
