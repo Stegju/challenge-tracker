@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&amp;family=VT323&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07090d}
+a{color:#c6ff3d}a:hover{color:#e2ff9a}
+.nt{clip-path:polygon(0 6px,2px 6px,2px 2px,6px 2px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 2px,calc(100% - 2px) 2px,calc(100% - 2px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 2px) calc(100% - 6px),calc(100% - 2px) calc(100% - 2px),calc(100% - 6px) calc(100% - 2px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 2px),2px calc(100% - 2px),2px calc(100% - 6px),0 calc(100% - 6px))}
+.pn{background:rgba(18,24,34,0.92);box-shadow:inset 0 0 0 2px #232c3b}
+.lbl{font-family:Silkscreen,monospace;font-size:10px;letter-spacing:1px;color:#8794a6}
+.btn{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:#c6ff3d;color:#0b0e13;text-decoration:none;font-family:Silkscreen,monospace;font-weight:700;font-size:12px;letter-spacing:1px}
+.btn2{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:transparent;box-shadow:inset 0 0 0 2px #3a4659;color:#c9d2de;text-decoration:none;font-family:Silkscreen,monospace;font-size:12px;letter-spacing:1px}
+.inp{height:48px;width:100%;box-sizing:border-box;padding:0 12px;border:0;background:#0a0d12;box-shadow:inset 0 0 0 2px #2c3749;color:#ffffff;font-family:VT323,monospace;font-size:24px}
+.flick{animation:flick 7s infinite steps(1)}
+@keyframes flick{0%,90%,100%{opacity:1}91%{opacity:.3}92%{opacity:1}94%{opacity:.55}95%{opacity:1}}
+.hop{animation:hop 1.2s infinite steps(4)}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.bob{animation:bob 2.8s infinite steps(3)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.sway{animation:sway 4s infinite steps(2)}
+@keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+.dust{animation:dust 10s linear infinite}
+@keyframes dust{0%{transform:translate(0,0);opacity:0}20%{opacity:.45}100%{transform:translate(16px,-140px);opacity:0}}
+.pulse{animation:pulse 1.2s infinite steps(2)}
+@keyframes pulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.flick,.hop,.bob,.sway,.dust,.pulse{animation:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #0d1118; color: #e6edf3; font-family: VT323, monospace; font-size: 20px">
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden">
+<div style="position: absolute; top: 0; left: 36px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; top: 0; left: 149px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; top: 0; left: 262px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; left: -120px; right: -120px; bottom: 0; height: 300px; transform: perspective(240px) rotateX(58deg); transform-origin: 50% 100%; background-image: linear-gradient(#18202d 2px, transparent 2px), linear-gradient(90deg, #18202d 2px, transparent 2px); background-size: 40px 40px; opacity: 0.6"></div>
+<svg viewBox="0 0 16 32" width="36" height="72" shape-rendering="crispEdges" style="position: absolute; left: 2px; bottom: 100px; opacity: 0.18"><path fill="#2a3344" d="M7 3h2v1h-2zM7 4h2v1h-2zM7 5h2v1h-2zM7 6h2v1h-2zM7 7h2v1h-2zM7 8h2v1h-2zM7 9h2v1h-2zM7 10h2v1h-2zM7 11h2v1h-2zM7 12h2v1h-2zM7 13h2v1h-2zM7 14h2v1h-2zM7 15h2v1h-2zM7 16h2v1h-2zM7 17h2v1h-2zM7 18h2v1h-2zM7 19h2v1h-2zM7 20h2v1h-2zM7 21h2v1h-2zM7 22h2v1h-2zM7 23h2v1h-2zM7 24h2v1h-2zM7 25h2v1h-2zM7 26h2v1h-2zM7 27h2v1h-2zM7 28h2v1h-2zM2 29h12v1h-12zM2 30h12v1h-12z"></path><path fill="#3d8bff" d="M3 6h3v1h-3zM3 7h3v1h-3zM3 8h3v1h-3zM3 9h3v1h-3zM3 10h3v1h-3zM3 11h3v1h-3zM3 12h3v1h-3zM3 13h3v1h-3zM3 14h3v1h-3z"></path><path fill="#3ecf6a" d="M10 8h3v1h-3zM10 9h3v1h-3zM10 10h3v1h-3zM10 11h3v1h-3zM10 12h3v1h-3zM10 13h3v1h-3zM10 14h3v1h-3z"></path><path fill="#f5d33b" d="M3 17h3v1h-3zM3 18h3v1h-3zM3 19h3v1h-3zM3 20h3v1h-3zM3 21h3v1h-3zM3 22h3v1h-3zM3 23h3v1h-3zM3 24h3v1h-3z"></path><path fill="#ff4d4d" d="M10 16h3v1h-3zM10 17h3v1h-3zM10 18h3v1h-3zM10 19h3v1h-3zM10 20h3v1h-3zM10 21h3v1h-3zM10 22h3v1h-3zM10 23h3v1h-3zM10 24h3v1h-3zM10 25h3v1h-3z"></path><path fill="#4a5568" d="M6 10h1v1h-1zM9 11h1v1h-1zM6 21h1v1h-1zM9 21h1v1h-1z"></path></svg>
+<svg viewBox="0 0 16 32" width="36" height="72" shape-rendering="crispEdges" style="position: absolute; right: 2px; bottom: 100px; opacity: 0.18; transform: scaleX(-1)"><path fill="#2a3344" d="M7 3h2v1h-2zM7 4h2v1h-2zM7 5h2v1h-2zM7 6h2v1h-2zM7 7h2v1h-2zM7 8h2v1h-2zM7 9h2v1h-2zM7 10h2v1h-2zM7 11h2v1h-2zM7 12h2v1h-2zM7 13h2v1h-2zM7 14h2v1h-2zM7 15h2v1h-2zM7 16h2v1h-2zM7 17h2v1h-2zM7 18h2v1h-2zM7 19h2v1h-2zM7 20h2v1h-2zM7 21h2v1h-2zM7 22h2v1h-2zM7 23h2v1h-2zM7 24h2v1h-2zM7 25h2v1h-2zM7 26h2v1h-2zM7 27h2v1h-2zM7 28h2v1h-2zM2 29h12v1h-12zM2 30h12v1h-12z"></path><path fill="#3d8bff" d="M3 6h3v1h-3zM3 7h3v1h-3zM3 8h3v1h-3zM3 9h3v1h-3zM3 10h3v1h-3zM3 11h3v1h-3zM3 12h3v1h-3zM3 13h3v1h-3zM3 14h3v1h-3z"></path><path fill="#3ecf6a" d="M10 8h3v1h-3zM10 9h3v1h-3zM10 10h3v1h-3zM10 11h3v1h-3zM10 12h3v1h-3zM10 13h3v1h-3zM10 14h3v1h-3z"></path><path fill="#f5d33b" d="M3 17h3v1h-3zM3 18h3v1h-3zM3 19h3v1h-3zM3 20h3v1h-3zM3 21h3v1h-3zM3 22h3v1h-3zM3 23h3v1h-3zM3 24h3v1h-3z"></path><path fill="#ff4d4d" d="M10 16h3v1h-3zM10 17h3v1h-3zM10 18h3v1h-3zM10 19h3v1h-3zM10 20h3v1h-3zM10 21h3v1h-3zM10 22h3v1h-3zM10 23h3v1h-3zM10 24h3v1h-3zM10 25h3v1h-3z"></path><path fill="#4a5568" d="M6 10h1v1h-1zM9 11h1v1h-1zM6 21h1v1h-1zM9 21h1v1h-1z"></path></svg>
+<div class="dust" style="position: absolute; left: 60px; top: 640px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 0s"></div>
+<div class="dust" style="position: absolute; left: 220px; top: 700px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 3.5s"></div>
+<div class="dust" style="position: absolute; left: 320px; top: 600px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 6.5s"></div>
+<div class="dust" style="position: absolute; left: 140px; top: 540px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 8s"></div>
+</div>
+<main style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; padding: 18px 16px 0">
+
+<div style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span class="lbl">TOTAL</span>
+<span style="line-height: 1"><span style="font-size: 36px; color: #ffffff">201</span><span style="font-size: 18px; color: #6f7c8e">/1000</span></span>
+</div>
+<div class="flick" style="padding: 4px 12px; border: 2px solid #c6ff3d; border-radius: 6px; box-shadow: 0 0 10px rgba(198,255,61,0.4), inset 0 0 8px rgba(198,255,61,0.25)">
+<span style="font-family: Silkscreen, monospace; font-weight: 700; font-size: 20px; color: #e9ffb0; text-shadow: 0 0 4px #c6ff3d, 0 0 14px rgba(198,255,61,0.8)">2027</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 2px; align-items: flex-end">
+<span class="lbl">REDO</span>
+<span style="display: flex; align-items: center; gap: 6px; line-height: 1"><span style="display: flex; gap: 3px"><span style="width: 10px; height: 10px; box-shadow: inset 0 0 0 2px #f5d33b"></span><span style="width: 10px; height: 10px; box-shadow: inset 0 0 0 2px #f5d33b"></span></span><span style="font-size: 36px; color: #ffffff">0<span style="font-size: 18px; color: #6f7c8e">/2</span></span></span>
+</div>
+</div>
+
+<section aria-label="Months" style="display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between"><span class="lbl">MONTHS</span><span class="lbl" style="color: #c9d2de">{{today}}</span></div>
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px">
+<div style="height: 26px; background: #c6ff3d; color: #0b0e13; display: flex; align-items: center; justify-content: center">J</div>
+<div style="height: 26px; background: #c6ff3d; color: #0b0e13; display: flex; align-items: center; justify-content: center">F</div>
+<div class="pulse" style="height: 26px; background: #0b0e13; box-shadow: inset 0 0 0 2px #c6ff3d; color: #c6ff3d; display: flex; align-items: center; justify-content: center">M</div>
+<div style="height: 26px; box-shadow: inset 0 0 0 1px #2c3749; color: #6f7c8e; display: flex; align-items: center; justify-content: center">A</div>
+<div style="height: 26px; box-shadow: inset 0 0 0 1px #2c3749; color: #6f7c8e; display: flex; align-items: center; justify-content: center">M</div>
+<div style="height: 26px; box-shadow: inset 0 0 0 1px #2c3749; color: #6f7c8e; display: flex; align-items: center; justify-content: center">J</div>
+<div style="height: 26px; box-shadow: inset 0 0 0 1px #2c3749; color: #6f7c8e; display: flex; align-items: center; justify-content: center">J</div>
+<div style="height: 26px; box-shadow: inset 0 0 0 1px #2c3749; color: #6f7c8e; display: flex; align-items: center; justify-content: center">A</div>
+<div style="height: 26px; box-shadow: inset 0 0 0 1px #2c3749; color: #6f7c8e; display: flex; align-items: center; justify-content: center">S</div>
+<div style="height: 26px; box-shadow: inset 0 0 0 1px #2c3749; color: #6f7c8e; display: flex; align-items: center; justify-content: center">O</div>
+<div style="height: 26px; box-shadow: inset 0 0 0 1px #2c3749; color: #6f7c8e; display: flex; align-items: center; justify-content: center">N</div>
+<div style="height: 26px; background: rgba(255,77,77,0.12); box-shadow: inset 0 0 0 2px #ff4d4d, 0 0 8px rgba(255,77,77,0.35); color: #ff8a8a; display: flex; align-items: center; justify-content: center">D</div>
+</div>
+</section>
+
+<section aria-label="Mascot" style="height: 138px; display: flex; align-items: center; justify-content: center; gap: 20px; padding-top: 8px">
+<div style="display: flex; flex-direction: column; align-items: center">
+<div class="hop"><dc-import name="Mascot" mood="pumped" size="132" hint-size="132px,132px"></dc-import></div>
+<div style="width: 80px; height: 6px; background: #000000; opacity: 0.4; margin-top: -4px"></div>
+</div>
+<div class="nt" style="width: 150px; background: rgba(18,24,34,0.94); box-shadow: inset 0 0 0 2px #c6ff3d; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px">
+<span class="lbl" style="color: #c6ff3d">PUMPED</span>
+<span style="font-size: 20px; line-height: 1.05">Up 3 reps in 9 days. Keep it going.</span>
+</div>
+</section>
+
+<section aria-label="Current challenge" class="nt pn" style="padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<span class="lbl" style="color: #c6ff3d">MARCH · STRENGTH</span>
+<span class="lbl" style="color: #c9d2de">{{daysLeft}}</span>
+</div>
+<h1 style="margin: 0; font-family: Silkscreen, monospace; font-weight: 700; font-size: 18px; color: #ffffff; letter-spacing: 0.5px">PULL-UPS · MAX REPS</h1>
+<div style="display: flex; align-items: flex-end; justify-content: space-between">
+<span style="line-height: 1"><span style="font-size: 52px; color: #c6ff3d">15</span><span style="font-size: 24px; color: #6f7c8e"> / 18 reps</span></span>
+<span style="font-size: 20px; color: #8794a6; padding-bottom: 6px">from 12</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<div role="img" aria-label="Score 50, target 100, bonus to 120" style="position: relative; height: 16px; background: #0a0d12; box-shadow: inset 0 0 0 2px #232c3b">
+<div style="position: absolute; left: 2px; top: 2px; bottom: 2px; width: calc((100% - 4px) * 0.4167); background: repeating-linear-gradient(90deg, transparent 0 5px, rgba(0,0,0,0.35) 5px 6px), linear-gradient(90deg, #f2f2f2 0 54px, #3ecf6a 54px 108px, #f5d33b 108px 162px, #3d8bff 162px 216px, #ff4d4d 216px); background-size: 100% 100%, 322px 100%"></div>
+<div style="position: absolute; left: 83.33%; top: -4px; bottom: -4px; width: 2px; background: #ffffff"></div>
+</div>
+<div style="display: flex; justify-content: space-between"><span class="lbl">50 PTS NOW</span><span class="lbl">100</span></div>
+</div>
+<div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px">
+<a href="Challenge.dc.html" class="nt btn">+ LOG ENTRY</a>
+<a href="Challenge.dc.html" class="nt btn2">DETAILS</a>
+</div>
+</section>
+
+<section aria-label="This week" class="nt pn" style="padding: 12px 16px; display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; align-items: end">
+<span class="lbl">THIS WEEK</span>
+<span class="lbl" style="color: #c9d2de; text-align: right">{{weekSummary}}</span>
+<div role="img" aria-label="{{weekAria}}" style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; align-items: end">
+<sc-for list="{{week}}" as="d" hint-placeholder-count="7">
+<div style="display: flex; flex-direction: column; align-items: stretch; gap: 4px">
+<div style="display: flex; flex-direction: column-reverse; gap: 2px">
+<sc-for list="{{d.blocks}}" as="b" hint-placeholder-count="1">
+<div style="height: {{b.h}}; background: {{b.c}}; box-shadow: inset 0 0 0 2px {{b.edge}}"></div>
+</sc-for>
+</div>
+<span style="font-size: 16px; line-height: 1; text-align: center; color: {{d.labelColor}}; background: {{d.labelBg}}; padding: 1px 0">{{d.l}}</span>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1"><span style="font-size: 30px; color: #c6ff3d">0.91</span><span class="lbl" style="font-size: 9px">MOMENTUM ↑</span></div>
+<div style="grid-column: 1 / -1; display: flex; gap: 14px; padding-top: 2px">
+<span class="lbl" style="font-size: 9px; display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 8px; background: #c6ff3d"></span>CHALLENGE</span>
+<span class="lbl" style="font-size: 9px; display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 8px; background: #3d8bff"></span>OTHER WORKOUT</span>
+<span class="lbl" style="font-size: 9px; display: flex; align-items: center; gap: 5px"><span style="width: 10px; height: 8px; box-shadow: inset 0 0 0 2px #ffffff"></span>TODAY</span>
+</div>
+</section>
+
+<sc-if value="{{endOfMonth}}" hint-placeholder-val="{{ false }}">
+<a href="Pick.dc.html" class="nt" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(198,255,61,0.08); box-shadow: inset 0 0 0 2px #c6ff3d; text-decoration: none; color: #e6edf3">
+<span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span class="lbl" style="color: #c6ff3d">APRIL LOCKS IN 2 DAYS</span><span style="font-size: 20px">Nothing picked yet</span></span>
+<span class="lbl" style="color: #0b0e13; background: #c6ff3d; padding: 8px 10px">CHOOSE</span>
+</a>
+</sc-if>
+
+</main>
+<nav aria-label="Main" class="nt" style="position: absolute; left: 12px; right: 12px; bottom: 12px; height: 60px; z-index: 10; background: rgba(10,13,18,0.96); box-shadow: inset 0 0 0 2px #232c3b; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; padding: 6px; box-sizing: border-box">
+<a href="Main.dc.html" aria-current="page" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: #c6ff3d; color: #0b0e13; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M5 1h2v1h-2zM4 2h4v1h-4zM3 3h6v1h-6zM2 4h8v1h-8zM3 5h6v6h-6zM5 8h2v3h-2z"></path></svg>HOME</a>
+<a href="Year.dc.html" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #8794a6; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M1 2h10v9h-10zM2 5h2v2h-2zM5 5h2v2h-2zM8 5h2v2h-2zM2 8h2v2h-2zM5 8h2v2h-2zM8 8h2v2h-2zM3 1h1v1h-1zM8 1h1v1h-1z"></path></svg>YEAR</a>
+<a href="Stats.dc.html" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #8794a6; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M1 7h2v4h-2zM4 4h2v7h-2zM7 6h2v5h-2zM10 2h1v9h-1zM0 11h12v1h-12z"></path></svg>STATS</a>
+<a href="Import.dc.html" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #8794a6; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M5 1h2v5h-2zM2 5h8v1h-8zM3 6h6v1h-6zM4 7h4v1h-4zM5 8h2v1h-2zM1 10h10v1h-10zM1 9h1v1h-1zM10 9h1v1h-1z"></path></svg>IMPORT</a>
+<a href="Settings.dc.html" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #8794a6; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M1 2h10v1h-10zM3 1h2v3h-2zM1 6h10v1h-10zM7 5h2v3h-2zM1 10h10v1h-10zM4 9h2v3h-2z"></path></svg>SETUP</a>
+</nav>
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 50; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0 1px, transparent 1px 3px)"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;endOfMonth&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false},&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
+class Component extends DCLogic {
+renderVals() {
+const eom = this.props.endOfMonth ?? false;
+const L = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+const plan = eom
+? [['c'], ['o'], ['c', 'o'], ['o'], ['c'], [], []]
+: [['o'], ['c'], ['o'], ['c', 'o'], [], ['o'], []];
+const todayIdx = 6;
+const C = { c: '#c6ff3d', o: '#3d8bff' };
+const week = L.map((l, i) => {
+const today = i === todayIdx;
+const blocks = plan[i].length ? plan[i].map((k) => ({ c: C[k], edge: 'transparent', h: '10px' })) : today ? [{ c: 'transparent', edge: '#ffffff', h: '10px' }] : [{ c: '#232c3b', edge: 'transparent', h: '2px' }];
+return { l, blocks, labelColor: today ? '#0b0e13' : '#6f7c8e', labelBg: today ? '#ffffff' : 'transparent' };
+});
+const nc = plan.flat().filter((k) => k === 'c').length;
+const no = plan.flat().filter((k) => k === 'o').length;
+const weekSummary = nc + '/3 CHALLENGE · ' + no + ' OTHER';
+const weekAria = 'This week: ' + nc + ' of 3 challenge sessions and ' + no + ' other workouts';
+return { weekSummary, weekAria, endOfMonth: eom, today: eom ? 'MON 29 MAR' : 'SUN 14 MAR', daysLeft: eom ? '2 DAYS LEFT' : '17 DAYS LEFT', week };
+}
+}
+</script>
+</body>
+</html>

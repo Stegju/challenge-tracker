@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Visual kit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&amp;family=VT323&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07090d}
+a{color:#c6ff3d}a:hover{color:#e2ff9a}
+.nt{clip-path:polygon(0 6px,2px 6px,2px 2px,6px 2px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 2px,calc(100% - 2px) 2px,calc(100% - 2px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 2px) calc(100% - 6px),calc(100% - 2px) calc(100% - 2px),calc(100% - 6px) calc(100% - 2px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 2px),2px calc(100% - 2px),2px calc(100% - 6px),0 calc(100% - 6px))}
+.pn{background:rgba(18,24,34,0.92);box-shadow:inset 0 0 0 2px #232c3b}
+.lbl{font-family:Silkscreen,monospace;font-size:10px;letter-spacing:1px;color:#8794a6}
+.btn{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:#c6ff3d;color:#0b0e13;text-decoration:none;font-family:Silkscreen,monospace;font-weight:700;font-size:12px;letter-spacing:1px}
+.btn2{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:transparent;box-shadow:inset 0 0 0 2px #3a4659;color:#c9d2de;text-decoration:none;font-family:Silkscreen,monospace;font-size:12px;letter-spacing:1px}
+.inp{height:48px;width:100%;box-sizing:border-box;padding:0 12px;border:0;background:#0a0d12;box-shadow:inset 0 0 0 2px #2c3749;color:#ffffff;font-family:VT323,monospace;font-size:24px}
+.flick{animation:flick 7s infinite steps(1)}
+@keyframes flick{0%,90%,100%{opacity:1}91%{opacity:.3}92%{opacity:1}94%{opacity:.55}95%{opacity:1}}
+.hop{animation:hop 1.2s infinite steps(4)}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.bob{animation:bob 2.8s infinite steps(3)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.sway{animation:sway 4s infinite steps(2)}
+@keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+.dust{animation:dust 10s linear infinite}
+@keyframes dust{0%{transform:translate(0,0);opacity:0}20%{opacity:.45}100%{transform:translate(16px,-140px);opacity:0}}
+.pulse{animation:pulse 1.2s infinite steps(2)}
+@keyframes pulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.flick,.hop,.bob,.sway,.dust,.pulse{animation:none}}
+</style>
+</helmet>
+<div style="width: 1000px; height: 820px; position: relative; overflow: hidden; background: #0d1118; color: #e6edf3; font-family: VT323, monospace; font-size: 20px; box-sizing: border-box; padding: 32px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-content: start">
+
+<section aria-label="Palette" style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: Silkscreen, monospace; font-size: 12px; color: #93a1b3; font-weight: 400">PALETTE</h2>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px">
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="height: 44px; background: #0d1118; box-shadow: inset 0 0 0 2px #2c3749"></div><span style="font-size: 16px">Base #0D1118</span></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="height: 44px; background: #141a24; box-shadow: inset 0 0 0 2px #2c3749"></div><span style="font-size: 16px">Panel #141A24</span></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="height: 44px; background: #2c3749"></div><span style="font-size: 16px">Edge #2C3749</span></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="height: 44px; background: #c6ff3d"></div><span style="font-size: 16px">Lime #C6FF3D</span></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="height: 44px; background: #93a1b3"></div><span style="font-size: 16px">Muted #93A1B3</span></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px">
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="height: 28px; background: #f2f2f2"></div><span style="font-size: 16px">Plates 1–2</span></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="height: 28px; background: #3ecf6a"></div><span style="font-size: 16px">3–4</span></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="height: 28px; background: #f5d33b"></div><span style="font-size: 16px">5–6 · redo</span></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="height: 28px; background: #3d8bff"></div><span style="font-size: 16px">7–8</span></div>
+<div style="display: flex; flex-direction: column; gap: 3px"><div style="height: 28px; background: #ff4d4d"></div><span style="font-size: 16px">9–10 · alert</span></div>
+</div>
+<div style="display: flex; gap: 16px; align-items: baseline; margin-top: 4px">
+<span style="font-family: Silkscreen, monospace; font-size: 12px">SILKSCREEN · LABELS</span>
+<span style="font-size: 22px">VT323 · body and numbers 0123</span>
+</div>
+</section>
+
+<section aria-label="Slot states" style="display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: Silkscreen, monospace; font-size: 12px; color: #93a1b3; font-weight: 400">SLOT STATES</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 6px; font-family: Silkscreen, monospace; font-size: 10px">
+<span style="padding: 5px 7px; box-shadow: inset 0 0 0 2px #2c3749; color: #93a1b3">OPEN</span>
+<span style="padding: 5px 7px; box-shadow: inset 0 0 0 2px #3a4659; color: #c9d2de">PLACEHOLDER</span>
+<span style="padding: 5px 7px; box-shadow: inset 0 0 0 2px #c6ff3d; color: #c6ff3d">LOCKED</span>
+<span style="padding: 5px 7px; background: #c6ff3d; color: #0b0e13">FINAL</span>
+<span style="padding: 5px 7px; background: #ff4d4d; color: #0b0e13">FORFEIT · 0</span>
+<span style="padding: 5px 7px; background: #f5d33b; color: #0b0e13">REDO</span>
+<span style="padding: 5px 7px; box-shadow: inset 0 0 0 2px #ff4d4d; color: #ff8a8a">BOSS</span>
+</div>
+<h2 style="margin: 8px 0 0; font-family: Silkscreen, monospace; font-size: 12px; color: #93a1b3; font-weight: 400">SCORE METER · TICK AT 100</h2>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<div style="display: grid; grid-template-columns: 44px 1fr; gap: 8px; align-items: center"><span>50</span><div style="position: relative; height: 16px; background: #0b0e13; box-shadow: inset 0 0 0 2px #2c3749"><div style="position: absolute; left: 2px; top: 2px; bottom: 2px; width: calc((100% - 4px) * 0.4167); background: repeating-linear-gradient(90deg, transparent 0 5px, rgba(0,0,0,0.35) 5px 6px), linear-gradient(90deg, #f2f2f2 0 67px, #3ecf6a 67px 133px, #f5d33b 133px 200px, #3d8bff 200px 267px, #ff4d4d 267px); background-size: 100% 100%, 400px 100%"></div><div style="position: absolute; left: 83.33%; top: -4px; bottom: -4px; width: 2px; background: #ffffff"></div></div></div>
+<div style="display: grid; grid-template-columns: 44px 1fr; gap: 8px; align-items: center"><span>100</span><div style="position: relative; height: 16px; background: #0b0e13; box-shadow: inset 0 0 0 2px #2c3749"><div style="position: absolute; left: 2px; top: 2px; bottom: 2px; width: calc((100% - 4px) * 0.8333); background: repeating-linear-gradient(90deg, transparent 0 5px, rgba(0,0,0,0.35) 5px 6px), linear-gradient(90deg, #f2f2f2 0 67px, #3ecf6a 67px 133px, #f5d33b 133px 200px, #3d8bff 200px 267px, #ff4d4d 267px); background-size: 100% 100%, 400px 100%"></div><div style="position: absolute; left: 83.33%; top: -4px; bottom: -4px; width: 2px; background: #ffffff"></div></div></div>
+<div style="display: grid; grid-template-columns: 44px 1fr; gap: 8px; align-items: center"><span style="color: #c6ff3d">120</span><div style="position: relative; height: 16px; background: #0b0e13; box-shadow: inset 0 0 0 2px #2c3749"><div style="position: absolute; left: 2px; top: 2px; bottom: 2px; width: calc(100% - 4px); background: repeating-linear-gradient(90deg, transparent 0 5px, rgba(0,0,0,0.35) 5px 6px), linear-gradient(90deg, #f2f2f2 0 67px, #3ecf6a 67px 133px, #f5d33b 133px 200px, #3d8bff 200px 267px, #ff4d4d 267px); background-size: 100% 100%, 400px 100%"></div><div style="position: absolute; left: 83.33%; top: -4px; bottom: -4px; width: 2px; background: #ffffff"></div></div></div>
+</div>
+</section>
+
+<section aria-label="Mascot moods" style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: Silkscreen, monospace; font-size: 12px; color: #8794a6; font-weight: 400">MASCOT · MOMENTUM, NOT SCORE</h2>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px"><div class="nt" style="padding: 12px 8px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #ff4d4d; display: flex; flex-direction: column; align-items: center; gap: 6px"><div class="hop"><dc-import name="Mascot" mood="onfire" size="104" hint-size="104px,104px"></dc-import></div><span style="font-family: Silkscreen, monospace; font-size: 11px; letter-spacing: 1px; color: #ff8a8a">ON FIRE</span><span style="font-size: 18px; color: #8794a6">1.0 and up</span></div><div class="nt" style="padding: 12px 8px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #c6ff3d; display: flex; flex-direction: column; align-items: center; gap: 6px"><div class="hop"><dc-import name="Mascot" mood="pumped" size="104" hint-size="104px,104px"></dc-import></div><span style="font-family: Silkscreen, monospace; font-size: 11px; letter-spacing: 1px; color: #c6ff3d">PUMPED</span><span style="font-size: 18px; color: #8794a6">0.75 to 1.0</span></div><div class="nt" style="padding: 12px 8px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #3d8bff; display: flex; flex-direction: column; align-items: center; gap: 6px"><div class="bob"><dc-import name="Mascot" mood="steady" size="104" hint-size="104px,104px"></dc-import></div><span style="font-family: Silkscreen, monospace; font-size: 11px; letter-spacing: 1px; color: #7fb2ff">STEADY</span><span style="font-size: 18px; color: #8794a6">0.5 to 0.75</span></div><div class="nt" style="padding: 12px 8px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #f5d33b; display: flex; flex-direction: column; align-items: center; gap: 6px"><div class="bob"><dc-import name="Mascot" mood="tired" size="104" hint-size="104px,104px"></dc-import></div><span style="font-family: Silkscreen, monospace; font-size: 11px; letter-spacing: 1px; color: #f5d33b">TIRED</span><span style="font-size: 18px; color: #8794a6">0.25 to 0.5</span></div><div class="nt" style="padding: 12px 8px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #7b8594; display: flex; flex-direction: column; align-items: center; gap: 6px"><div class="sway"><dc-import name="Mascot" mood="slumped" size="104" hint-size="104px,104px"></dc-import></div><span style="font-family: Silkscreen, monospace; font-size: 11px; letter-spacing: 1px; color: #b4bdc9">SLUMPED</span><span style="font-size: 18px; color: #8794a6">below 0.25</span></div></div>
+<p style="margin: 0; font-size: 19px; line-height: 1.15; color: #c9d2de">Updated daily. Momentum = 0.7 × showing up + 0.3 × improving, smoothed. Showing up: workouts in the last 7 days against the weekly dose (challenge sessions count fully, any other workout counts half). Improving: how far your recent entries moved toward target. Skip a few days and it drains on its own.</p>
+</section>
+
+<section aria-label="Barbell progression" style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px">
+<h2 style="margin: 0; font-family: Silkscreen, monospace; font-size: 12px; color: #93a1b3; font-weight: 400">BARBELL · ONE PLATE PER SIDE PER 100 PTS · DASHED = NEXT</h2>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px"><dc-import name="Barbell" points="40" width="220" hint-size="220px,80px"></dc-import><span style="font-size: 18px; color: #93a1b3">40 pts · 0 plates</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><dc-import name="Barbell" points="201" width="220" hint-size="220px,80px"></dc-import><span style="font-size: 18px; color: #93a1b3">201 pts · 2 white</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><dc-import name="Barbell" points="575" width="220" hint-size="220px,80px"></dc-import><span style="font-size: 18px; color: #93a1b3">575 pts · 5 plates</span></div>
+<div style="display: flex; flex-direction: column; gap: 4px"><dc-import name="Barbell" points="1000" width="220" hint-size="220px,80px"></dc-import><span style="font-size: 18px; color: #93a1b3">1000 pts · full bar</span></div>
+</div>
+</section>
+
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 50; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0 1px, transparent 1px 3px)"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1000,"height":820}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

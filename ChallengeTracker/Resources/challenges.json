@@ -1,0 +1,159 @@
+{
+  "version": 2,
+  "note": "Julian's final 2027 list: 10 challenges + 2 redo months = 12 slots. weeklyDose values are placeholders (3 sessions) until Julian sets them. metric: 'time' entered as h:mm:ss or mm:ss and stored in seconds; 'e1rm' entered as weight + reps and stored as kg via e1RM = w(1 + r/30); 'number' stored as typed.",
+  "challenges": [
+    {
+      "id": "hyrox-race",
+      "name": "HYROX race",
+      "domain": "hybrid",
+      "metric": "time",
+      "unit": "h:mm:ss",
+      "direction": "lower",
+      "weeklyDose": {
+        "unit": "sessions",
+        "amount": 3
+      },
+      "countedExercises": [],
+      "notes": "Event: result is the official race time. Pick the month of a race you are entered in."
+    },
+    {
+      "id": "pushups-max",
+      "name": "Max push-ups",
+      "domain": "strength",
+      "metric": "number",
+      "unit": "reps",
+      "direction": "higher",
+      "weeklyDose": {
+        "unit": "sessions",
+        "amount": 3
+      },
+      "countedExercises": [
+        "push up"
+      ],
+      "notes": "One unbroken set."
+    },
+    {
+      "id": "bench-e1rm",
+      "name": "Bench press",
+      "domain": "strength",
+      "metric": "e1rm",
+      "unit": "kg",
+      "direction": "higher",
+      "weeklyDose": {
+        "unit": "sessions",
+        "amount": 3
+      },
+      "countedExercises": [
+        "bench press"
+      ],
+      "notes": "Best non-warm-up set. Sets above 10 reps are flagged as unreliable."
+    },
+    {
+      "id": "row-2k",
+      "name": "2K row",
+      "domain": "speed",
+      "metric": "time",
+      "unit": "mm:ss",
+      "direction": "lower",
+      "weeklyDose": {
+        "unit": "sessions",
+        "amount": 3
+      },
+      "countedExercises": [
+        "rowing"
+      ]
+    },
+    {
+      "id": "the-cut",
+      "name": "The cut",
+      "domain": "physique",
+      "metric": "number",
+      "unit": "% body fat",
+      "direction": "lower",
+      "weeklyDose": {
+        "unit": "sessions",
+        "amount": 3
+      },
+      "countedExercises": [],
+      "notes": "Estimated body fat. Same method and time of day for every measurement."
+    },
+    {
+      "id": "run-5k",
+      "name": "5K run",
+      "domain": "speed",
+      "metric": "time",
+      "unit": "mm:ss",
+      "direction": "lower",
+      "weeklyDose": {
+        "unit": "sessions",
+        "amount": 3
+      },
+      "countedExercises": [
+        "running"
+      ]
+    },
+    {
+      "id": "bike-long",
+      "name": "Long bike ride",
+      "domain": "endurance",
+      "metric": "number",
+      "unit": "km",
+      "direction": "higher",
+      "weeklyDose": {
+        "unit": "sessions",
+        "amount": 3
+      },
+      "countedExercises": [
+        "cycling"
+      ],
+      "notes": "Single ride, as far as possible."
+    },
+    {
+      "id": "run-long",
+      "name": "Long run",
+      "domain": "endurance",
+      "metric": "number",
+      "unit": "km",
+      "direction": "higher",
+      "weeklyDose": {
+        "unit": "sessions",
+        "amount": 3
+      },
+      "countedExercises": [
+        "running"
+      ],
+      "notes": "Single run, as far as possible."
+    },
+    {
+      "id": "pullups-max",
+      "name": "Max pull-ups",
+      "domain": "strength",
+      "metric": "number",
+      "unit": "reps",
+      "direction": "higher",
+      "weeklyDose": {
+        "unit": "sessions",
+        "amount": 3
+      },
+      "countedExercises": [
+        "pull up"
+      ],
+      "notes": "One unbroken set, dead hang."
+    },
+    {
+      "id": "murph",
+      "name": "Murph",
+      "domain": "hybrid",
+      "metric": "time",
+      "unit": "h:mm:ss",
+      "direction": "lower",
+      "weeklyDose": {
+        "unit": "sessions",
+        "amount": 3
+      },
+      "countedExercises": [],
+      "fixedMonth": 12,
+      "notes": "Boss challenge. Fixed to December. Rx standard (vest or not) to be decided before locking."
+    }
+  ]
+}

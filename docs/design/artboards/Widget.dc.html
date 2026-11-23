@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Medium widget</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&amp;family=VT323&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07090d}
+a{color:#c6ff3d}a:hover{color:#e2ff9a}
+.nt{clip-path:polygon(0 6px,2px 6px,2px 2px,6px 2px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 2px,calc(100% - 2px) 2px,calc(100% - 2px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 2px) calc(100% - 6px),calc(100% - 2px) calc(100% - 2px),calc(100% - 6px) calc(100% - 2px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 2px),2px calc(100% - 2px),2px calc(100% - 6px),0 calc(100% - 6px))}
+.pn{background:rgba(18,24,34,0.92);box-shadow:inset 0 0 0 2px #232c3b}
+.lbl{font-family:Silkscreen,monospace;font-size:10px;letter-spacing:1px;color:#8794a6}
+.btn{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:#c6ff3d;color:#0b0e13;text-decoration:none;font-family:Silkscreen,monospace;font-weight:700;font-size:12px;letter-spacing:1px}
+.btn2{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:transparent;box-shadow:inset 0 0 0 2px #3a4659;color:#c9d2de;text-decoration:none;font-family:Silkscreen,monospace;font-size:12px;letter-spacing:1px}
+.inp{height:48px;width:100%;box-sizing:border-box;padding:0 12px;border:0;background:#0a0d12;box-shadow:inset 0 0 0 2px #2c3749;color:#ffffff;font-family:VT323,monospace;font-size:24px}
+.flick{animation:flick 7s infinite steps(1)}
+@keyframes flick{0%,90%,100%{opacity:1}91%{opacity:.3}92%{opacity:1}94%{opacity:.55}95%{opacity:1}}
+.hop{animation:hop 1.2s infinite steps(4)}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.bob{animation:bob 2.8s infinite steps(3)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.sway{animation:sway 4s infinite steps(2)}
+@keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+.dust{animation:dust 10s linear infinite}
+@keyframes dust{0%{transform:translate(0,0);opacity:0}20%{opacity:.45}100%{transform:translate(16px,-140px);opacity:0}}
+.pulse{animation:pulse 1.2s infinite steps(2)}
+@keyframes pulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.flick,.hop,.bob,.sway,.dust,.pulse{animation:none}}
+</style>
+</helmet>
+<div style="width: 364px; height: 170px; position: relative; overflow: hidden; background: #0d1118; color: #e6edf3; font-family: VT323, monospace; font-size: 20px; box-sizing: border-box; padding: 16px 18px; display: grid; grid-template-columns: 104px 1fr; gap: 16px; align-items: center">
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px">
+<dc-import name="Mascot" mood="pumped" size="96" hint-size="96px,96px"></dc-import>
+<span class="lbl" style="color: #c6ff3d">PUMPED</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<span class="lbl" style="color: #c9d2de">MAR · PULL-UPS</span>
+<span style="line-height: 1"><span style="font-size: 46px; color: #c6ff3d">15</span><span style="font-size: 22px; color: #6f7c8e"> / 18</span></span>
+<div style="position: relative; height: 12px; background: #0a0d12; box-shadow: inset 0 0 0 2px #232c3b">
+<div style="position: absolute; left: 2px; top: 2px; bottom: 2px; width: calc((100% - 4px) * 0.4167); background: repeating-linear-gradient(90deg, transparent 0 4px, rgba(0,0,0,0.35) 4px 5px), linear-gradient(90deg, #f2f2f2 0 34px, #3ecf6a 34px 68px, #f5d33b 68px 101px, #3d8bff 101px 135px, #ff4d4d 135px); background-size: 100% 100%, 204px 100%"></div>
+<div style="position: absolute; left: 83.33%; top: -3px; bottom: -3px; width: 2px; background: #ffffff"></div>
+</div>
+<div style="display: flex; justify-content: space-between"><span class="lbl">17D LEFT</span><span class="lbl" style="color: #c9d2de">201 PTS</span></div>
+</div>
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 50; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0 1px, transparent 1px 3px)"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":364,"height":170}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

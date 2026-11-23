@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Choose a challenge</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&amp;family=VT323&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07090d}
+a{color:#c6ff3d}a:hover{color:#e2ff9a}
+.nt{clip-path:polygon(0 6px,2px 6px,2px 2px,6px 2px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 2px,calc(100% - 2px) 2px,calc(100% - 2px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 2px) calc(100% - 6px),calc(100% - 2px) calc(100% - 2px),calc(100% - 6px) calc(100% - 2px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 2px),2px calc(100% - 2px),2px calc(100% - 6px),0 calc(100% - 6px))}
+.pn{background:rgba(18,24,34,0.92);box-shadow:inset 0 0 0 2px #232c3b}
+.lbl{font-family:Silkscreen,monospace;font-size:10px;letter-spacing:1px;color:#8794a6}
+.btn{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:#c6ff3d;color:#0b0e13;text-decoration:none;font-family:Silkscreen,monospace;font-weight:700;font-size:12px;letter-spacing:1px}
+.btn2{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:transparent;box-shadow:inset 0 0 0 2px #3a4659;color:#c9d2de;text-decoration:none;font-family:Silkscreen,monospace;font-size:12px;letter-spacing:1px}
+.inp{height:48px;width:100%;box-sizing:border-box;padding:0 12px;border:0;background:#0a0d12;box-shadow:inset 0 0 0 2px #2c3749;color:#ffffff;font-family:VT323,monospace;font-size:24px}
+.flick{animation:flick 7s infinite steps(1)}
+@keyframes flick{0%,90%,100%{opacity:1}91%{opacity:.3}92%{opacity:1}94%{opacity:.55}95%{opacity:1}}
+.hop{animation:hop 1.2s infinite steps(4)}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.bob{animation:bob 2.8s infinite steps(3)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.sway{animation:sway 4s infinite steps(2)}
+@keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+.dust{animation:dust 10s linear infinite}
+@keyframes dust{0%{transform:translate(0,0);opacity:0}20%{opacity:.45}100%{transform:translate(16px,-140px);opacity:0}}
+.pulse{animation:pulse 1.2s infinite steps(2)}
+@keyframes pulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.flick,.hop,.bob,.sway,.dust,.pulse{animation:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #0d1118; color: #e6edf3; font-family: VT323, monospace; font-size: 20px">
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden">
+<div style="position: absolute; top: 0; left: 36px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; top: 0; left: 149px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; top: 0; left: 262px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; left: -120px; right: -120px; bottom: 0; height: 300px; transform: perspective(240px) rotateX(58deg); transform-origin: 50% 100%; background-image: linear-gradient(#18202d 2px, transparent 2px), linear-gradient(90deg, #18202d 2px, transparent 2px); background-size: 40px 40px; opacity: 0.6"></div>
+<svg viewBox="0 0 16 32" width="36" height="72" shape-rendering="crispEdges" style="position: absolute; left: 2px; bottom: 100px; opacity: 0.18"><path fill="#2a3344" d="M7 3h2v1h-2zM7 4h2v1h-2zM7 5h2v1h-2zM7 6h2v1h-2zM7 7h2v1h-2zM7 8h2v1h-2zM7 9h2v1h-2zM7 10h2v1h-2zM7 11h2v1h-2zM7 12h2v1h-2zM7 13h2v1h-2zM7 14h2v1h-2zM7 15h2v1h-2zM7 16h2v1h-2zM7 17h2v1h-2zM7 18h2v1h-2zM7 19h2v1h-2zM7 20h2v1h-2zM7 21h2v1h-2zM7 22h2v1h-2zM7 23h2v1h-2zM7 24h2v1h-2zM7 25h2v1h-2zM7 26h2v1h-2zM7 27h2v1h-2zM7 28h2v1h-2zM2 29h12v1h-12zM2 30h12v1h-12z"></path><path fill="#3d8bff" d="M3 6h3v1h-3zM3 7h3v1h-3zM3 8h3v1h-3zM3 9h3v1h-3zM3 10h3v1h-3zM3 11h3v1h-3zM3 12h3v1h-3zM3 13h3v1h-3zM3 14h3v1h-3z"></path><path fill="#3ecf6a" d="M10 8h3v1h-3zM10 9h3v1h-3zM10 10h3v1h-3zM10 11h3v1h-3zM10 12h3v1h-3zM10 13h3v1h-3zM10 14h3v1h-3z"></path><path fill="#f5d33b" d="M3 17h3v1h-3zM3 18h3v1h-3zM3 19h3v1h-3zM3 20h3v1h-3zM3 21h3v1h-3zM3 22h3v1h-3zM3 23h3v1h-3zM3 24h3v1h-3z"></path><path fill="#ff4d4d" d="M10 16h3v1h-3zM10 17h3v1h-3zM10 18h3v1h-3zM10 19h3v1h-3zM10 20h3v1h-3zM10 21h3v1h-3zM10 22h3v1h-3zM10 23h3v1h-3zM10 24h3v1h-3zM10 25h3v1h-3z"></path><path fill="#4a5568" d="M6 10h1v1h-1zM9 11h1v1h-1zM6 21h1v1h-1zM9 21h1v1h-1z"></path></svg>
+<svg viewBox="0 0 16 32" width="36" height="72" shape-rendering="crispEdges" style="position: absolute; right: 2px; bottom: 100px; opacity: 0.18; transform: scaleX(-1)"><path fill="#2a3344" d="M7 3h2v1h-2zM7 4h2v1h-2zM7 5h2v1h-2zM7 6h2v1h-2zM7 7h2v1h-2zM7 8h2v1h-2zM7 9h2v1h-2zM7 10h2v1h-2zM7 11h2v1h-2zM7 12h2v1h-2zM7 13h2v1h-2zM7 14h2v1h-2zM7 15h2v1h-2zM7 16h2v1h-2zM7 17h2v1h-2zM7 18h2v1h-2zM7 19h2v1h-2zM7 20h2v1h-2zM7 21h2v1h-2zM7 22h2v1h-2zM7 23h2v1h-2zM7 24h2v1h-2zM7 25h2v1h-2zM7 26h2v1h-2zM7 27h2v1h-2zM7 28h2v1h-2zM2 29h12v1h-12zM2 30h12v1h-12z"></path><path fill="#3d8bff" d="M3 6h3v1h-3zM3 7h3v1h-3zM3 8h3v1h-3zM3 9h3v1h-3zM3 10h3v1h-3zM3 11h3v1h-3zM3 12h3v1h-3zM3 13h3v1h-3zM3 14h3v1h-3z"></path><path fill="#3ecf6a" d="M10 8h3v1h-3zM10 9h3v1h-3zM10 10h3v1h-3zM10 11h3v1h-3zM10 12h3v1h-3zM10 13h3v1h-3zM10 14h3v1h-3z"></path><path fill="#f5d33b" d="M3 17h3v1h-3zM3 18h3v1h-3zM3 19h3v1h-3zM3 20h3v1h-3zM3 21h3v1h-3zM3 22h3v1h-3zM3 23h3v1h-3zM3 24h3v1h-3z"></path><path fill="#ff4d4d" d="M10 16h3v1h-3zM10 17h3v1h-3zM10 18h3v1h-3zM10 19h3v1h-3zM10 20h3v1h-3zM10 21h3v1h-3zM10 22h3v1h-3zM10 23h3v1h-3zM10 24h3v1h-3zM10 25h3v1h-3z"></path><path fill="#4a5568" d="M6 10h1v1h-1zM9 11h1v1h-1zM6 21h1v1h-1zM9 21h1v1h-1z"></path></svg>
+<div class="dust" style="position: absolute; left: 60px; top: 640px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 0s"></div>
+<div class="dust" style="position: absolute; left: 220px; top: 700px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 3.5s"></div>
+<div class="dust" style="position: absolute; left: 320px; top: 600px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 6.5s"></div>
+<div class="dust" style="position: absolute; left: 140px; top: 540px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 8s"></div>
+</div>
+<main style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; padding: 18px 16px 0">
+
+<header style="display: flex; align-items: center; gap: 12px">
+<a href="Year.dc.html" aria-label="Back to year" class="nt pn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #c6ff3d; text-decoration: none"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M3 5h8v2h-8zM4 3h2v2h-2zM2 4h2v4h-2zM4 7h2v2h-2zM6 2h1v1h-1zM6 9h1v1h-1z"></path></svg></a>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span class="lbl">LOCKS 1 APR 00:00</span>
+<h1 style="margin: 0; font-family: Silkscreen, monospace; font-weight: 700; font-size: 20px; color: #ffffff">CHOOSE APRIL</h1>
+</div>
+</header>
+
+<div role="tablist" aria-label="Challenge type" class="nt pn" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; padding: 4px">
+<button type="button" role="tab" aria-selected="{{newSel}}" onClick="{{showNew}}" class="nt" style="height: 44px; border: 0; background: {{newBg}}; color: {{newFg}}; font-family: Silkscreen, monospace; font-weight: 700; font-size: 11px; letter-spacing: 1px">NEW · 8 LEFT</button>
+<button type="button" role="tab" aria-selected="{{redoSel}}" onClick="{{showRedo}}" class="nt" style="height: 44px; border: 0; background: {{redoBg}}; color: {{redoFg}}; font-family: Silkscreen, monospace; font-weight: 700; font-size: 11px; letter-spacing: 1px">REDO · 2 LEFT</button>
+</div>
+
+<sc-if value="{{isRedo}}" hint-placeholder-val="{{ false }}">
+<p style="margin: 0; font-size: 19px; color: #8794a6">Same baseline and target as last time. The better attempt counts.</p>
+</sc-if>
+
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{items}}" as="it" hint-placeholder-count="8">
+<li>
+<button type="button" aria-pressed="{{it.pressed}}" disabled="{{it.disabled}}" onClick="{{it.pick}}" class="nt" style="width: 100%; min-height: 54px; border: 0; padding: 8px 12px; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; text-align: left; background: {{it.bg}}; box-shadow: inset 0 0 0 2px {{it.edge}}; color: {{it.fg}}; font-family: VT323, monospace">
+<span style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 22px; line-height: 1">{{it.name}}</span><span style="font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px; color: {{it.subColor}}">{{it.sub}}</span></span>
+<span style="font-family: {{it.rightFont}}; font-size: {{it.rightSize}}; letter-spacing: 1px; color: {{it.rightColor}}">{{it.right}}</span>
+</button>
+</li>
+</sc-for>
+</ul>
+
+</main>
+<div style="position: absolute; left: 16px; right: 16px; bottom: 16px; z-index: 10">
+<button type="button" disabled="{{noPick}}" class="nt" style="width: 100%; height: 54px; border: 0; background: {{ctaBg}}; color: {{ctaFg}}; box-shadow: inset 0 0 0 2px {{ctaEdge}}; font-family: Silkscreen, monospace; font-weight: 700; font-size: 12px; letter-spacing: 1px">{{cta}}</button>
+</div>
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 50; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0 1px, transparent 1px 3px)"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const s = Object.assign({ tab: 'new', sel: null }, this.state || {});
+const fresh = [
+['10K run', 'ENDURANCE · TIME · FASTER WINS'],
+['Hyrox simulation', 'HYBRID · TIME · FASTER WINS'],
+['2K row', 'SPEED · TIME · FASTER WINS'],
+['Deadlift 1RM', 'STRENGTH · KG'],
+['Push-ups in 2 min', 'ENDURANCE · REPS'],
+['Waist', 'PHYSIQUE · CM · LOWER WINS'],
+['400 m sprint', 'SPEED · TIME · FASTER WINS'],
+['Farmer carry 2×32 kg', 'HYBRID · METRES']
+];
+const redo = [
+['5K run', 'JAN · 23:10 → 21:25', '81', false],
+['Bench press 1RM', 'FEB · 90 → 102.5 KG · MAXED', '120', true]
+];
+const mk = (id, name, sub, right, disabled, isRedo) => {
+const on = s.sel === id;
+return {
+name, sub, right, disabled: !!disabled, pressed: on ? 'true' : 'false',
+bg: on ? 'rgba(198,255,61,0.1)' : disabled ? 'rgba(10,13,18,0.7)' : 'rgba(18,24,34,0.92)',
+edge: on ? '#c6ff3d' : '#232c3b',
+fg: disabled ? '#4d5869' : '#e6edf3',
+subColor: disabled ? '#4d5869' : on ? '#c6ff3d' : '#8794a6',
+rightFont: isRedo ? 'VT323, monospace' : 'Silkscreen, monospace',
+rightSize: isRedo ? '26px' : '10px',
+rightColor: disabled ? '#4d5869' : on ? '#c6ff3d' : isRedo ? '#f5d33b' : '#4d5869',
+pick: () => { if (!disabled) this.setState({ sel: on ? null : id }); }
+};
+};
+const items = s.tab === 'new'
+? fresh.map((f, i) => mk('n' + i, f[0], f[1], s.sel === 'n' + i ? 'PICKED' : '', false, false))
+: redo.map((r, i) => mk('r' + i, r[0], r[1], r[2], r[3], true));
+let picked = null;
+if (s.sel) { const i = Number(s.sel.slice(1)); picked = s.sel[0] === 'n' ? fresh[i][0] : 'Redo ' + redo[i][0]; }
+const tabOn = { bg: '#c6ff3d', fg: '#0b0e13' }, tabOff = { bg: 'transparent', fg: '#8794a6' };
+const tn = s.tab === 'new' ? tabOn : tabOff, tr = s.tab === 'redo' ? { bg: '#f5d33b', fg: '#0b0e13' } : tabOff;
+return {
+items, isRedo: s.tab === 'redo',
+newBg: tn.bg, newFg: tn.fg, redoBg: tr.bg, redoFg: tr.fg,
+newSel: s.tab === 'new' ? 'true' : 'false', redoSel: s.tab === 'redo' ? 'true' : 'false',
+showNew: () => this.setState({ tab: 'new', sel: null }),
+showRedo: () => this.setState({ tab: 'redo', sel: null }),
+noPick: !picked,
+cta: picked ? 'SET ' + picked.toUpperCase() + ' FOR APRIL' : 'PICK ONE',
+ctaBg: picked ? '#c6ff3d' : 'rgba(10,13,18,0.94)', ctaFg: picked ? '#0b0e13' : '#4d5869', ctaEdge: picked ? '#c6ff3d' : '#232c3b'
+};
+}
+}
+</script>
+</body>
+</html>

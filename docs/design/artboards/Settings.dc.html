@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&amp;family=VT323&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07090d}
+a{color:#c6ff3d}a:hover{color:#e2ff9a}
+.nt{clip-path:polygon(0 6px,2px 6px,2px 2px,6px 2px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 2px,calc(100% - 2px) 2px,calc(100% - 2px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 2px) calc(100% - 6px),calc(100% - 2px) calc(100% - 2px),calc(100% - 6px) calc(100% - 2px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 2px),2px calc(100% - 2px),2px calc(100% - 6px),0 calc(100% - 6px))}
+.pn{background:rgba(18,24,34,0.92);box-shadow:inset 0 0 0 2px #232c3b}
+.lbl{font-family:Silkscreen,monospace;font-size:10px;letter-spacing:1px;color:#8794a6}
+.btn{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:#c6ff3d;color:#0b0e13;text-decoration:none;font-family:Silkscreen,monospace;font-weight:700;font-size:12px;letter-spacing:1px}
+.btn2{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:transparent;box-shadow:inset 0 0 0 2px #3a4659;color:#c9d2de;text-decoration:none;font-family:Silkscreen,monospace;font-size:12px;letter-spacing:1px}
+.inp{height:48px;width:100%;box-sizing:border-box;padding:0 12px;border:0;background:#0a0d12;box-shadow:inset 0 0 0 2px #232c3b;color:#ffffff;font-family:VT323,monospace;font-size:24px}
+.flick{animation:flick 7s infinite steps(1)}
+@keyframes flick{0%,90%,100%{opacity:1}91%{opacity:.3}92%{opacity:1}94%{opacity:.55}95%{opacity:1}}
+.hop{animation:hop 1.2s infinite steps(4)}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.bob{animation:bob 2.8s infinite steps(3)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.sway{animation:sway 4s infinite steps(2)}
+@keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+.dust{animation:dust 10s linear infinite}
+@keyframes dust{0%{transform:translate(0,0);opacity:0}20%{opacity:.45}100%{transform:translate(16px,-140px);opacity:0}}
+.pulse{animation:pulse 1.2s infinite steps(2)}
+@keyframes pulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.flick,.hop,.bob,.sway,.dust,.pulse{animation:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 1180px; position: relative; overflow: hidden; background: #0d1118; color: #e6edf3; font-family: VT323, monospace; font-size: 20px">
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden">
+<div style="position: absolute; top: 0; left: 36px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; top: 0; left: 149px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; top: 0; left: 262px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; left: -120px; right: -120px; bottom: 0; height: 300px; transform: perspective(240px) rotateX(58deg); transform-origin: 50% 100%; background-image: linear-gradient(#18202d 2px, transparent 2px), linear-gradient(90deg, #18202d 2px, transparent 2px); background-size: 40px 40px; opacity: 0.6"></div>
+<svg viewBox="0 0 16 32" width="36" height="72" shape-rendering="crispEdges" style="position: absolute; left: 2px; bottom: 100px; opacity: 0.18"><path fill="#2a3344" d="M7 3h2v1h-2zM7 4h2v1h-2zM7 5h2v1h-2zM7 6h2v1h-2zM7 7h2v1h-2zM7 8h2v1h-2zM7 9h2v1h-2zM7 10h2v1h-2zM7 11h2v1h-2zM7 12h2v1h-2zM7 13h2v1h-2zM7 14h2v1h-2zM7 15h2v1h-2zM7 16h2v1h-2zM7 17h2v1h-2zM7 18h2v1h-2zM7 19h2v1h-2zM7 20h2v1h-2zM7 21h2v1h-2zM7 22h2v1h-2zM7 23h2v1h-2zM7 24h2v1h-2zM7 25h2v1h-2zM7 26h2v1h-2zM7 27h2v1h-2zM7 28h2v1h-2zM2 29h12v1h-12zM2 30h12v1h-12z"></path><path fill="#3d8bff" d="M3 6h3v1h-3zM3 7h3v1h-3zM3 8h3v1h-3zM3 9h3v1h-3zM3 10h3v1h-3zM3 11h3v1h-3zM3 12h3v1h-3zM3 13h3v1h-3zM3 14h3v1h-3z"></path><path fill="#3ecf6a" d="M10 8h3v1h-3zM10 9h3v1h-3zM10 10h3v1h-3zM10 11h3v1h-3zM10 12h3v1h-3zM10 13h3v1h-3zM10 14h3v1h-3z"></path><path fill="#f5d33b" d="M3 17h3v1h-3zM3 18h3v1h-3zM3 19h3v1h-3zM3 20h3v1h-3zM3 21h3v1h-3zM3 22h3v1h-3zM3 23h3v1h-3zM3 24h3v1h-3z"></path><path fill="#ff4d4d" d="M10 16h3v1h-3zM10 17h3v1h-3zM10 18h3v1h-3zM10 19h3v1h-3zM10 20h3v1h-3zM10 21h3v1h-3zM10 22h3v1h-3zM10 23h3v1h-3zM10 24h3v1h-3zM10 25h3v1h-3z"></path><path fill="#4a5568" d="M6 10h1v1h-1zM9 11h1v1h-1zM6 21h1v1h-1zM9 21h1v1h-1z"></path></svg>
+<svg viewBox="0 0 16 32" width="36" height="72" shape-rendering="crispEdges" style="position: absolute; right: 2px; bottom: 100px; opacity: 0.18; transform: scaleX(-1)"><path fill="#2a3344" d="M7 3h2v1h-2zM7 4h2v1h-2zM7 5h2v1h-2zM7 6h2v1h-2zM7 7h2v1h-2zM7 8h2v1h-2zM7 9h2v1h-2zM7 10h2v1h-2zM7 11h2v1h-2zM7 12h2v1h-2zM7 13h2v1h-2zM7 14h2v1h-2zM7 15h2v1h-2zM7 16h2v1h-2zM7 17h2v1h-2zM7 18h2v1h-2zM7 19h2v1h-2zM7 20h2v1h-2zM7 21h2v1h-2zM7 22h2v1h-2zM7 23h2v1h-2zM7 24h2v1h-2zM7 25h2v1h-2zM7 26h2v1h-2zM7 27h2v1h-2zM7 28h2v1h-2zM2 29h12v1h-12zM2 30h12v1h-12z"></path><path fill="#3d8bff" d="M3 6h3v1h-3zM3 7h3v1h-3zM3 8h3v1h-3zM3 9h3v1h-3zM3 10h3v1h-3zM3 11h3v1h-3zM3 12h3v1h-3zM3 13h3v1h-3zM3 14h3v1h-3z"></path><path fill="#3ecf6a" d="M10 8h3v1h-3zM10 9h3v1h-3zM10 10h3v1h-3zM10 11h3v1h-3zM10 12h3v1h-3zM10 13h3v1h-3zM10 14h3v1h-3z"></path><path fill="#f5d33b" d="M3 17h3v1h-3zM3 18h3v1h-3zM3 19h3v1h-3zM3 20h3v1h-3zM3 21h3v1h-3zM3 22h3v1h-3zM3 23h3v1h-3zM3 24h3v1h-3z"></path><path fill="#ff4d4d" d="M10 16h3v1h-3zM10 17h3v1h-3zM10 18h3v1h-3zM10 19h3v1h-3zM10 20h3v1h-3zM10 21h3v1h-3zM10 22h3v1h-3zM10 23h3v1h-3zM10 24h3v1h-3zM10 25h3v1h-3z"></path><path fill="#4a5568" d="M6 10h1v1h-1zM9 11h1v1h-1zM6 21h1v1h-1zM9 21h1v1h-1z"></path></svg>
+<div class="dust" style="position: absolute; left: 60px; top: 640px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 0s"></div>
+<div class="dust" style="position: absolute; left: 220px; top: 700px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 3.5s"></div>
+<div class="dust" style="position: absolute; left: 320px; top: 600px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 6.5s"></div>
+<div class="dust" style="position: absolute; left: 140px; top: 540px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 8s"></div>
+</div>
+<main style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; padding: 18px 16px 0">
+
+<header style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: Silkscreen, monospace; font-size: 10px; color: #8794a6">HOUSEKEEPING</span>
+<h1 style="margin: 0; font-family: Silkscreen, monospace; font-weight: 700; font-size: 22px; color: #ffffff">SETUP</h1>
+</header>
+
+<section aria-label="Rules" class="nt" style="padding: 12px 14px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #232c3b; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: Silkscreen, monospace; font-size: 10px; color: #8794a6">RULES</span>
+<ol style="margin: 0; padding-left: 22px; font-size: 18px; line-height: 1.1; color: #c9d2de; display: flex; flex-direction: column; gap: 3px">
+<li>12 slots. Exactly 2 are redo months.</li>
+<li>Edit freely until midnight on the 1st, then it locks.</li>
+<li>Blank baseline? Days 1–3 to enter it.</li>
+<li>No name or target at lock scores 0.</li>
+<li>Score 0–120. Redo keeps the better attempt.</li>
+<li>One plate per side per 100 points.</li>
+</ol>
+</section>
+
+<section aria-label="Notifications" class="nt" style="padding: 12px 14px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #232c3b; display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: Silkscreen, monospace; font-size: 10px; color: #8794a6; margin-bottom: 4px">NOTIFICATIONS</span>
+<sc-for list="{{notifs}}" as="n" hint-placeholder-count="5">
+<div style="display: flex; align-items: center; gap: 10px; min-height: 44px">
+<span style="flex: 1; font-size: 19px; line-height: 1.05">{{n.label}}</span>
+<button type="button" role="switch" aria-checked="{{n.aria}}" aria-label="{{n.label}}" onClick="{{n.toggle}}" style="width: 52px; height: 28px; padding: 3px; border: 0; background: {{n.track}}; box-shadow: inset 0 0 0 2px {{n.edge}}; display: flex; justify-content: {{n.side}}"><span style="width: 22px; height: 22px; background: {{n.knob}}"></span></button>
+</div>
+</sc-for>
+</section>
+
+<section aria-label="Health" class="nt" style="padding: 12px 14px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #232c3b; display: flex; align-items: center; gap: 10px">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-family: Silkscreen, monospace; font-size: 10px; color: #8794a6">HEALTHKIT · V1.1</span><span style="font-size: 19px; line-height: 1.05">Read-only: workouts, distance, heart rate</span></div>
+<button type="button" class="nt" style="height: 44px; padding: 0 12px; border: 0; background: transparent; box-shadow: inset 0 0 0 2px #3d8bff; color: #7fb2ff; font-family: Silkscreen, monospace; font-size: 11px">ALLOW</button>
+</section>
+
+<section aria-label="Widget" class="nt" style="padding: 12px 14px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #232c3b; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: Silkscreen, monospace; font-size: 10px; color: #8794a6">WIDGET</span>
+<span style="font-size: 19px; line-height: 1.1">Long-press the Home Screen, tap +, find this app, pick the medium size.</span>
+</section>
+
+<section aria-label="Test date" class="nt" style="padding: 12px 14px; background: rgba(245,211,59,0.06); box-shadow: inset 0 0 0 2px #5c5220; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: center"><span style="font-family: Silkscreen, monospace; font-size: 10px; color: #f5d33b">TEST DATE · LOCK CHECKS ONLY</span>
+<button type="button" role="switch" aria-checked="{{testAria}}" aria-label="Use test date" onClick="{{toggleTest}}" style="width: 52px; height: 28px; padding: 3px; border: 0; background: {{testTrack}}; box-shadow: inset 0 0 0 2px {{testEdge}}; display: flex; justify-content: {{testSide}}"><span style="width: 22px; height: 22px; background: {{testKnob}}"></span></button></div>
+<label style="display: flex; flex-direction: column; gap: 4px"><span style="font-size: 18px; color: #c9d2de">Pretend it is</span><input type="text" value="1 Apr 2027 00:00" style="height: 44px; box-sizing: border-box; padding: 0 10px; border: 0; background: #0b0e13; box-shadow: inset 0 0 0 2px #3a4659; color: #ffffff; font-family: VT323, monospace; font-size: 22px"></label>
+<span style="font-size: 18px; color: #8794a6">Shows what locks at that moment. Real data is never changed.</span>
+</section>
+
+<section aria-label="Backup" class="nt" style="padding: 12px 14px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #232c3b; display: flex; flex-direction: column; gap: 8px">
+<span style="font-family: Silkscreen, monospace; font-size: 10px; color: #8794a6">BACKUP · JSON</span>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<button type="button" class="nt" style="height: 44px; border: 0; background: #c6ff3d; color: #0b0e13; font-family: Silkscreen, monospace; font-weight: 700; font-size: 11px">EXPORT</button>
+<button type="button" class="nt" style="height: 44px; border: 0; background: transparent; box-shadow: inset 0 0 0 2px #c6ff3d; color: #c6ff3d; font-family: Silkscreen, monospace; font-size: 11px">RESTORE</button>
+</div>
+<span style="font-size: 18px; color: #8794a6">Last export: 1 Mar 2027</span>
+</section>
+
+<button type="button" class="nt" style="height: 48px; border: 0; background: transparent; box-shadow: inset 0 0 0 2px #ff4d4d; color: #ff8a8a; font-family: Silkscreen, monospace; font-size: 12px">RESET YEAR</button>
+
+</main>
+<nav aria-label="Main" class="nt" style="position: absolute; left: 12px; right: 12px; bottom: 12px; height: 60px; z-index: 10; background: rgba(10,13,18,0.96); box-shadow: inset 0 0 0 2px #232c3b; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; padding: 6px; box-sizing: border-box">
+<a href="Main.dc.html" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #8794a6; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M5 1h2v1h-2zM4 2h4v1h-4zM3 3h6v1h-6zM2 4h8v1h-8zM3 5h6v6h-6zM5 8h2v3h-2z"></path></svg>HOME</a>
+<a href="Year.dc.html" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #8794a6; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M1 2h10v9h-10zM2 5h2v2h-2zM5 5h2v2h-2zM8 5h2v2h-2zM2 8h2v2h-2zM5 8h2v2h-2zM8 8h2v2h-2zM3 1h1v1h-1zM8 1h1v1h-1z"></path></svg>YEAR</a>
+<a href="Stats.dc.html" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #8794a6; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M1 7h2v4h-2zM4 4h2v7h-2zM7 6h2v5h-2zM10 2h1v9h-1zM0 11h12v1h-12z"></path></svg>STATS</a>
+<a href="Import.dc.html" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #8794a6; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M5 1h2v5h-2zM2 5h8v1h-8zM3 6h6v1h-6zM4 7h4v1h-4zM5 8h2v1h-2zM1 10h10v1h-10zM1 9h1v1h-1zM10 9h1v1h-1z"></path></svg>IMPORT</a>
+<a href="Settings.dc.html" aria-current="page" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: #c6ff3d; color: #0b0e13; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M1 2h10v1h-10zM3 1h2v3h-2zM1 6h10v1h-10zM7 5h2v3h-2zM1 10h10v1h-10zM4 9h2v3h-2z"></path></svg>SETUP</a>
+</nav>
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 50; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0 1px, transparent 1px 3px)"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1180}}'>
+class Component extends DCLogic {
+renderVals() {
+const s = Object.assign({ on: [true, true, true, true, false], test: false }, this.state || {});
+const sw = (on) => ({ track: on ? '#c6ff3d' : '#0b0e13', edge: on ? '#c6ff3d' : '#3a4659', knob: on ? '#0b0e13' : '#6f7c8e', side: on ? 'flex-end' : 'flex-start', aria: on ? 'true' : 'false' });
+const labels = ['Next slot empty, 7 and 2 days before lock', 'Baseline blank on day 1 and day 3', 'No result 3 days before month end', 'Result not finalized, day after', 'Mascot drops to tired or slumped'];
+const notifs = labels.map((label, i) => Object.assign({ label, toggle: () => { const on = s.on.slice(); on[i] = !on[i]; this.setState({ on }); } }, sw(s.on[i])));
+const t = sw(s.test);
+return {
+notifs,
+testTrack: s.test ? '#f5d33b' : '#0b0e13', testEdge: s.test ? '#f5d33b' : '#3a4659', testKnob: t.knob, testSide: t.side, testAria: t.aria,
+toggleTest: () => this.setState({ test: !s.test })
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stats</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&amp;family=VT323&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07090d}
+a{color:#c6ff3d}a:hover{color:#e2ff9a}
+.nt{clip-path:polygon(0 6px,2px 6px,2px 2px,6px 2px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 2px,calc(100% - 2px) 2px,calc(100% - 2px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 2px) calc(100% - 6px),calc(100% - 2px) calc(100% - 2px),calc(100% - 6px) calc(100% - 2px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 2px),2px calc(100% - 2px),2px calc(100% - 6px),0 calc(100% - 6px))}
+.pn{background:rgba(18,24,34,0.92);box-shadow:inset 0 0 0 2px #232c3b}
+.lbl{font-family:Silkscreen,monospace;font-size:10px;letter-spacing:1px;color:#8794a6}
+.btn{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:#c6ff3d;color:#0b0e13;text-decoration:none;font-family:Silkscreen,monospace;font-weight:700;font-size:12px;letter-spacing:1px}
+.btn2{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:transparent;box-shadow:inset 0 0 0 2px #3a4659;color:#c9d2de;text-decoration:none;font-family:Silkscreen,monospace;font-size:12px;letter-spacing:1px}
+.inp{height:48px;width:100%;box-sizing:border-box;padding:0 12px;border:0;background:#0a0d12;box-shadow:inset 0 0 0 2px #232c3b;color:#ffffff;font-family:VT323,monospace;font-size:24px}
+.flick{animation:flick 7s infinite steps(1)}
+@keyframes flick{0%,90%,100%{opacity:1}91%{opacity:.3}92%{opacity:1}94%{opacity:.55}95%{opacity:1}}
+.hop{animation:hop 1.2s infinite steps(4)}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.bob{animation:bob 2.8s infinite steps(3)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.sway{animation:sway 4s infinite steps(2)}
+@keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+.dust{animation:dust 10s linear infinite}
+@keyframes dust{0%{transform:translate(0,0);opacity:0}20%{opacity:.45}100%{transform:translate(16px,-140px);opacity:0}}
+.pulse{animation:pulse 1.2s infinite steps(2)}
+@keyframes pulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.flick,.hop,.bob,.sway,.dust,.pulse{animation:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 1120px; position: relative; overflow: hidden; background: #0d1118; color: #e6edf3; font-family: VT323, monospace; font-size: 20px">
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden">
+<div style="position: absolute; top: 0; left: 36px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; top: 0; left: 149px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; top: 0; left: 262px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; left: -120px; right: -120px; bottom: 0; height: 300px; transform: perspective(240px) rotateX(58deg); transform-origin: 50% 100%; background-image: linear-gradient(#18202d 2px, transparent 2px), linear-gradient(90deg, #18202d 2px, transparent 2px); background-size: 40px 40px; opacity: 0.6"></div>
+<svg viewBox="0 0 16 32" width="36" height="72" shape-rendering="crispEdges" style="position: absolute; left: 2px; bottom: 100px; opacity: 0.18"><path fill="#2a3344" d="M7 3h2v1h-2zM7 4h2v1h-2zM7 5h2v1h-2zM7 6h2v1h-2zM7 7h2v1h-2zM7 8h2v1h-2zM7 9h2v1h-2zM7 10h2v1h-2zM7 11h2v1h-2zM7 12h2v1h-2zM7 13h2v1h-2zM7 14h2v1h-2zM7 15h2v1h-2zM7 16h2v1h-2zM7 17h2v1h-2zM7 18h2v1h-2zM7 19h2v1h-2zM7 20h2v1h-2zM7 21h2v1h-2zM7 22h2v1h-2zM7 23h2v1h-2zM7 24h2v1h-2zM7 25h2v1h-2zM7 26h2v1h-2zM7 27h2v1h-2zM7 28h2v1h-2zM2 29h12v1h-12zM2 30h12v1h-12z"></path><path fill="#3d8bff" d="M3 6h3v1h-3zM3 7h3v1h-3zM3 8h3v1h-3zM3 9h3v1h-3zM3 10h3v1h-3zM3 11h3v1h-3zM3 12h3v1h-3zM3 13h3v1h-3zM3 14h3v1h-3z"></path><path fill="#3ecf6a" d="M10 8h3v1h-3zM10 9h3v1h-3zM10 10h3v1h-3zM10 11h3v1h-3zM10 12h3v1h-3zM10 13h3v1h-3zM10 14h3v1h-3z"></path><path fill="#f5d33b" d="M3 17h3v1h-3zM3 18h3v1h-3zM3 19h3v1h-3zM3 20h3v1h-3zM3 21h3v1h-3zM3 22h3v1h-3zM3 23h3v1h-3zM3 24h3v1h-3z"></path><path fill="#ff4d4d" d="M10 16h3v1h-3zM10 17h3v1h-3zM10 18h3v1h-3zM10 19h3v1h-3zM10 20h3v1h-3zM10 21h3v1h-3zM10 22h3v1h-3zM10 23h3v1h-3zM10 24h3v1h-3zM10 25h3v1h-3z"></path><path fill="#4a5568" d="M6 10h1v1h-1zM9 11h1v1h-1zM6 21h1v1h-1zM9 21h1v1h-1z"></path></svg>
+<svg viewBox="0 0 16 32" width="36" height="72" shape-rendering="crispEdges" style="position: absolute; right: 2px; bottom: 100px; opacity: 0.18; transform: scaleX(-1)"><path fill="#2a3344" d="M7 3h2v1h-2zM7 4h2v1h-2zM7 5h2v1h-2zM7 6h2v1h-2zM7 7h2v1h-2zM7 8h2v1h-2zM7 9h2v1h-2zM7 10h2v1h-2zM7 11h2v1h-2zM7 12h2v1h-2zM7 13h2v1h-2zM7 14h2v1h-2zM7 15h2v1h-2zM7 16h2v1h-2zM7 17h2v1h-2zM7 18h2v1h-2zM7 19h2v1h-2zM7 20h2v1h-2zM7 21h2v1h-2zM7 22h2v1h-2zM7 23h2v1h-2zM7 24h2v1h-2zM7 25h2v1h-2zM7 26h2v1h-2zM7 27h2v1h-2zM7 28h2v1h-2zM2 29h12v1h-12zM2 30h12v1h-12z"></path><path fill="#3d8bff" d="M3 6h3v1h-3zM3 7h3v1h-3zM3 8h3v1h-3zM3 9h3v1h-3zM3 10h3v1h-3zM3 11h3v1h-3zM3 12h3v1h-3zM3 13h3v1h-3zM3 14h3v1h-3z"></path><path fill="#3ecf6a" d="M10 8h3v1h-3zM10 9h3v1h-3zM10 10h3v1h-3zM10 11h3v1h-3zM10 12h3v1h-3zM10 13h3v1h-3zM10 14h3v1h-3z"></path><path fill="#f5d33b" d="M3 17h3v1h-3zM3 18h3v1h-3zM3 19h3v1h-3zM3 20h3v1h-3zM3 21h3v1h-3zM3 22h3v1h-3zM3 23h3v1h-3zM3 24h3v1h-3z"></path><path fill="#ff4d4d" d="M10 16h3v1h-3zM10 17h3v1h-3zM10 18h3v1h-3zM10 19h3v1h-3zM10 20h3v1h-3zM10 21h3v1h-3zM10 22h3v1h-3zM10 23h3v1h-3zM10 24h3v1h-3zM10 25h3v1h-3z"></path><path fill="#4a5568" d="M6 10h1v1h-1zM9 11h1v1h-1zM6 21h1v1h-1zM9 21h1v1h-1z"></path></svg>
+<div class="dust" style="position: absolute; left: 60px; top: 640px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 0s"></div>
+<div class="dust" style="position: absolute; left: 220px; top: 700px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 3.5s"></div>
+<div class="dust" style="position: absolute; left: 320px; top: 600px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 6.5s"></div>
+<div class="dust" style="position: absolute; left: 140px; top: 540px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 8s"></div>
+</div>
+<main style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 12px; padding: 18px 16px 0">
+
+<header style="display: flex; align-items: flex-end; justify-content: space-between">
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-family: Silkscreen, monospace; font-size: 10px; color: #8794a6">LOOKING BACK</span>
+<h1 style="margin: 0; font-family: Silkscreen, monospace; font-weight: 700; font-size: 22px; color: #ffffff">STATS</h1>
+</div>
+<div style="text-align: right; line-height: 1"><span style="font-size: 34px; color: #ffffff">201</span><span style="font-size: 18px; color: #8794a6">/1000</span></div>
+</header>
+
+<section aria-label="Barbell" class="nt" style="padding: 14px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #232c3b; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; justify-content: space-between; font-family: Silkscreen, monospace; font-size: 10px"><span style="color: #8794a6">THE BAR</span><span style="color: #ffffff">2.01 PLATES / SIDE</span></div>
+<dc-import name="Barbell" points="201" width="330" hint-size="330px,120px"></dc-import>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span style="font-family: Silkscreen, monospace; font-size: 10px; color: #8794a6">NEXT PLATE</span><span style="font-size: 22px; line-height: 1"><span style="color: #3ecf6a">99</span> pts to go</span></div>
+<div style="height: 10px; background: #0b0e13; box-shadow: inset 0 0 0 2px #232c3b; position: relative"><div style="position: absolute; left: 2px; top: 2px; bottom: 2px; width: calc((100% - 4px) * 0.01); background: #3ecf6a"></div></div>
+<span style="font-size: 18px; color: #8794a6">The small plate is exact: 1 of 100 toward plate 3.</span>
+</div>
+</section>
+
+<section aria-label="Domains" class="nt" style="padding: 14px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #232c3b; display: flex; flex-direction: column; gap: 4px">
+<div style="display: flex; justify-content: space-between; font-family: Silkscreen, monospace; font-size: 10px"><span style="color: #8794a6">BY DOMAIN · BEST SCORE</span><span style="display: flex; align-items: center; gap: 4px; color: #8794a6"><span style="width: 10px; height: 0; border-top: 2px dashed #ffffff"></span>100</span></div>
+<svg role="img" aria-label="Radar: strength 120, speed 81, endurance 0, physique 0, hybrid 0" viewBox="0 0 220 180" width="330" height="270" style="align-self: center">
+<polygon points="110,72.7 132.2,88.8 123.7,114.9 96.3,114.9 87.8,88.8" fill="none" stroke="#1f2838" stroke-width="1"></polygon>
+<polygon points="110,49.3 154.4,81.6 137.4,133.8 82.6,133.8 65.6,81.6" fill="none" stroke="#1f2838" stroke-width="1"></polygon>
+<polygon points="110,26 176.6,74.4 151.1,152.6 68.9,152.6 43.4,74.4" fill="none" stroke="#2c3749" stroke-width="1.5"></polygon>
+<line x1="110" y1="96" x2="110" y2="26" stroke="#1f2838"></line><line x1="110" y1="96" x2="176.6" y2="74.4" stroke="#1f2838"></line><line x1="110" y1="96" x2="151.1" y2="152.6" stroke="#1f2838"></line><line x1="110" y1="96" x2="68.9" y2="152.6" stroke="#1f2838"></line><line x1="110" y1="96" x2="43.4" y2="74.4" stroke="#1f2838"></line>
+<polygon points="110,37.7 165.5,78 144.3,143.2 75.7,143.2 54.5,78" fill="none" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 3" opacity="0.7"></polygon>
+<polygon points="110,26 154.9,81.4 111.4,97.9 108.6,97.9 107.8,95.3" fill="rgba(198,255,61,0.22)" stroke="#c6ff3d" stroke-width="2" stroke-linejoin="miter"></polygon>
+<rect x="107" y="23" width="6" height="6" fill="#c6ff3d"></rect><rect x="151.9" y="78.4" width="6" height="6" fill="#c6ff3d"></rect>
+<g font-family="Silkscreen, monospace" font-size="8" fill="#c9d2de" text-anchor="middle">
+<text x="110" y="12">STRENGTH 120</text><text x="190" y="62">SPEED</text><text x="190" y="72">81</text><text x="160" y="170">ENDURANCE</text><text x="60" y="170">PHYSIQUE</text><text x="28" y="66">HYBRID</text>
+</g>
+</svg>
+</section>
+
+<section aria-label="Score per month" class="nt" style="padding: 14px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #232c3b; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: Silkscreen, monospace; font-size: 10px; color: #8794a6">SCORE PER MONTH</span>
+<div style="position: relative">
+<div style="position: absolute; left: 0; right: 0; top: 16px; border-top: 2px dashed rgba(255,255,255,0.6)"></div>
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px; align-items: end; height: 96px">
+<div style="height: 65px; background: #c6ff3d"></div>
+<div style="height: 96px; background: #c6ff3d"></div>
+<div style="height: 40px; box-sizing: border-box; border: 2px dashed #c6ff3d"></div>
+<div style="height: 2px; background: #2c3749"></div><div style="height: 2px; background: #2c3749"></div><div style="height: 2px; background: #2c3749"></div><div style="height: 2px; background: #2c3749"></div><div style="height: 2px; background: #2c3749"></div><div style="height: 2px; background: #2c3749"></div><div style="height: 2px; background: #2c3749"></div><div style="height: 2px; background: #2c3749"></div><div style="height: 2px; background: #ff4d4d"></div>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px; text-align: center; font-size: 17px; color: #8794a6"><span style="color: #e6edf3">81</span><span style="color: #c6ff3d">120</span><span>50*</span><span>J</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span><span>O</span><span>N</span><span>D</span></div>
+<span style="font-size: 17px; color: #8794a6">* live, not final</span>
+</section>
+
+<section aria-label="Start versus end" class="nt" style="padding: 14px; background: rgba(18,24,34,0.92); box-shadow: inset 0 0 0 2px #232c3b; display: flex; flex-direction: column; gap: 6px">
+<span style="font-family: Silkscreen, monospace; font-size: 10px; color: #8794a6">START → END</span>
+<table style="border-collapse: collapse; width: 100%; font-size: 20px">
+<thead><tr style="font-family: Silkscreen, monospace; font-size: 9px; color: #8794a6; text-align: left"><th scope="col" style="font-weight: 400; padding: 4px 0">CHALLENGE</th><th scope="col" style="font-weight: 400; padding: 4px 0">START</th><th scope="col" style="font-weight: 400; padding: 4px 0">END</th><th scope="col" style="font-weight: 400; padding: 4px 0; text-align: right">PTS</th></tr></thead>
+<tbody>
+<tr style="border-top: 2px solid #1f2838"><td style="padding: 6px 0">5K run</td><td style="color: #8794a6">23:10</td><td>21:25</td><td style="text-align: right">81</td></tr>
+<tr style="border-top: 2px solid #1f2838"><td style="padding: 6px 0">Bench 1RM</td><td style="color: #8794a6">90 kg</td><td>102.5 kg</td><td style="text-align: right; color: #c6ff3d">120</td></tr>
+<tr style="border-top: 2px solid #1f2838"><td style="padding: 6px 0">Pull-ups</td><td style="color: #8794a6">12</td><td>15*</td><td style="text-align: right; color: #8794a6">50*</td></tr>
+</tbody>
+</table>
+</section>
+
+</main>
+<nav aria-label="Main" class="nt" style="position: absolute; left: 12px; right: 12px; bottom: 12px; height: 60px; z-index: 10; background: rgba(10,13,18,0.96); box-shadow: inset 0 0 0 2px #232c3b; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; padding: 6px; box-sizing: border-box">
+<a href="Main.dc.html" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #8794a6; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M5 1h2v1h-2zM4 2h4v1h-4zM3 3h6v1h-6zM2 4h8v1h-8zM3 5h6v6h-6zM5 8h2v3h-2z"></path></svg>HOME</a>
+<a href="Year.dc.html" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #8794a6; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M1 2h10v9h-10zM2 5h2v2h-2zM5 5h2v2h-2zM8 5h2v2h-2zM2 8h2v2h-2zM5 8h2v2h-2zM8 8h2v2h-2zM3 1h1v1h-1zM8 1h1v1h-1z"></path></svg>YEAR</a>
+<a href="Stats.dc.html" aria-current="page" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: #c6ff3d; color: #0b0e13; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M1 7h2v4h-2zM4 4h2v7h-2zM7 6h2v5h-2zM10 2h1v9h-1zM0 11h12v1h-12z"></path></svg>STATS</a>
+<a href="Import.dc.html" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #8794a6; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M5 1h2v5h-2zM2 5h8v1h-8zM3 6h6v1h-6zM4 7h4v1h-4zM5 8h2v1h-2zM1 10h10v1h-10zM1 9h1v1h-1zM10 9h1v1h-1z"></path></svg>IMPORT</a>
+<a href="Settings.dc.html" class="nt" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: transparent; color: #8794a6; text-decoration: none; font-family: Silkscreen, monospace; font-size: 9px; letter-spacing: 1px"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M1 2h10v1h-10zM3 1h2v3h-2zM1 6h10v1h-10zM7 5h2v3h-2zM1 10h10v1h-10zM4 9h2v3h-2z"></path></svg>SETUP</a>
+</nav>
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 50; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0 1px, transparent 1px 3px)"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1120}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

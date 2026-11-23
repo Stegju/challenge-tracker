@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Challenge detail</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&amp;family=VT323&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#07090d}
+a{color:#c6ff3d}a:hover{color:#e2ff9a}
+.nt{clip-path:polygon(0 6px,2px 6px,2px 2px,6px 2px,6px 0,calc(100% - 6px) 0,calc(100% - 6px) 2px,calc(100% - 2px) 2px,calc(100% - 2px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 2px) calc(100% - 6px),calc(100% - 2px) calc(100% - 2px),calc(100% - 6px) calc(100% - 2px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 2px),2px calc(100% - 2px),2px calc(100% - 6px),0 calc(100% - 6px))}
+.pn{background:rgba(18,24,34,0.92);box-shadow:inset 0 0 0 2px #232c3b}
+.lbl{font-family:Silkscreen,monospace;font-size:10px;letter-spacing:1px;color:#8794a6}
+.btn{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:#c6ff3d;color:#0b0e13;text-decoration:none;font-family:Silkscreen,monospace;font-weight:700;font-size:12px;letter-spacing:1px}
+.btn2{height:48px;border:0;display:flex;align-items:center;justify-content:center;gap:8px;background:transparent;box-shadow:inset 0 0 0 2px #3a4659;color:#c9d2de;text-decoration:none;font-family:Silkscreen,monospace;font-size:12px;letter-spacing:1px}
+.inp{height:48px;width:100%;box-sizing:border-box;padding:0 12px;border:0;background:#0a0d12;box-shadow:inset 0 0 0 2px #2c3749;color:#ffffff;font-family:VT323,monospace;font-size:24px}
+.flick{animation:flick 7s infinite steps(1)}
+@keyframes flick{0%,90%,100%{opacity:1}91%{opacity:.3}92%{opacity:1}94%{opacity:.55}95%{opacity:1}}
+.hop{animation:hop 1.2s infinite steps(4)}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.bob{animation:bob 2.8s infinite steps(3)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.sway{animation:sway 4s infinite steps(2)}
+@keyframes sway{0%,100%{transform:rotate(0)}50%{transform:rotate(-3deg)}}
+.dust{animation:dust 10s linear infinite}
+@keyframes dust{0%{transform:translate(0,0);opacity:0}20%{opacity:.45}100%{transform:translate(16px,-140px);opacity:0}}
+.pulse{animation:pulse 1.2s infinite steps(2)}
+@keyframes pulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.flick,.hop,.bob,.sway,.dust,.pulse{animation:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 880px; position: relative; overflow: hidden; background: #0d1118; color: #e6edf3; font-family: VT323, monospace; font-size: 20px">
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden">
+<div style="position: absolute; top: 0; left: 36px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; top: 0; left: 149px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; top: 0; left: 262px; width: 92px; height: 3px; background: #d7ecff; opacity: 0.4; box-shadow: 0 0 20px 6px rgba(140,190,255,0.16)"></div>
+<div style="position: absolute; left: -120px; right: -120px; bottom: 0; height: 300px; transform: perspective(240px) rotateX(58deg); transform-origin: 50% 100%; background-image: linear-gradient(#18202d 2px, transparent 2px), linear-gradient(90deg, #18202d 2px, transparent 2px); background-size: 40px 40px; opacity: 0.6"></div>
+<svg viewBox="0 0 16 32" width="36" height="72" shape-rendering="crispEdges" style="position: absolute; left: 2px; bottom: 100px; opacity: 0.18"><path fill="#2a3344" d="M7 3h2v1h-2zM7 4h2v1h-2zM7 5h2v1h-2zM7 6h2v1h-2zM7 7h2v1h-2zM7 8h2v1h-2zM7 9h2v1h-2zM7 10h2v1h-2zM7 11h2v1h-2zM7 12h2v1h-2zM7 13h2v1h-2zM7 14h2v1h-2zM7 15h2v1h-2zM7 16h2v1h-2zM7 17h2v1h-2zM7 18h2v1h-2zM7 19h2v1h-2zM7 20h2v1h-2zM7 21h2v1h-2zM7 22h2v1h-2zM7 23h2v1h-2zM7 24h2v1h-2zM7 25h2v1h-2zM7 26h2v1h-2zM7 27h2v1h-2zM7 28h2v1h-2zM2 29h12v1h-12zM2 30h12v1h-12z"></path><path fill="#3d8bff" d="M3 6h3v1h-3zM3 7h3v1h-3zM3 8h3v1h-3zM3 9h3v1h-3zM3 10h3v1h-3zM3 11h3v1h-3zM3 12h3v1h-3zM3 13h3v1h-3zM3 14h3v1h-3z"></path><path fill="#3ecf6a" d="M10 8h3v1h-3zM10 9h3v1h-3zM10 10h3v1h-3zM10 11h3v1h-3zM10 12h3v1h-3zM10 13h3v1h-3zM10 14h3v1h-3z"></path><path fill="#f5d33b" d="M3 17h3v1h-3zM3 18h3v1h-3zM3 19h3v1h-3zM3 20h3v1h-3zM3 21h3v1h-3zM3 22h3v1h-3zM3 23h3v1h-3zM3 24h3v1h-3z"></path><path fill="#ff4d4d" d="M10 16h3v1h-3zM10 17h3v1h-3zM10 18h3v1h-3zM10 19h3v1h-3zM10 20h3v1h-3zM10 21h3v1h-3zM10 22h3v1h-3zM10 23h3v1h-3zM10 24h3v1h-3zM10 25h3v1h-3z"></path><path fill="#4a5568" d="M6 10h1v1h-1zM9 11h1v1h-1zM6 21h1v1h-1zM9 21h1v1h-1z"></path></svg>
+<svg viewBox="0 0 16 32" width="36" height="72" shape-rendering="crispEdges" style="position: absolute; right: 2px; bottom: 100px; opacity: 0.18; transform: scaleX(-1)"><path fill="#2a3344" d="M7 3h2v1h-2zM7 4h2v1h-2zM7 5h2v1h-2zM7 6h2v1h-2zM7 7h2v1h-2zM7 8h2v1h-2zM7 9h2v1h-2zM7 10h2v1h-2zM7 11h2v1h-2zM7 12h2v1h-2zM7 13h2v1h-2zM7 14h2v1h-2zM7 15h2v1h-2zM7 16h2v1h-2zM7 17h2v1h-2zM7 18h2v1h-2zM7 19h2v1h-2zM7 20h2v1h-2zM7 21h2v1h-2zM7 22h2v1h-2zM7 23h2v1h-2zM7 24h2v1h-2zM7 25h2v1h-2zM7 26h2v1h-2zM7 27h2v1h-2zM7 28h2v1h-2zM2 29h12v1h-12zM2 30h12v1h-12z"></path><path fill="#3d8bff" d="M3 6h3v1h-3zM3 7h3v1h-3zM3 8h3v1h-3zM3 9h3v1h-3zM3 10h3v1h-3zM3 11h3v1h-3zM3 12h3v1h-3zM3 13h3v1h-3zM3 14h3v1h-3z"></path><path fill="#3ecf6a" d="M10 8h3v1h-3zM10 9h3v1h-3zM10 10h3v1h-3zM10 11h3v1h-3zM10 12h3v1h-3zM10 13h3v1h-3zM10 14h3v1h-3z"></path><path fill="#f5d33b" d="M3 17h3v1h-3zM3 18h3v1h-3zM3 19h3v1h-3zM3 20h3v1h-3zM3 21h3v1h-3zM3 22h3v1h-3zM3 23h3v1h-3zM3 24h3v1h-3z"></path><path fill="#ff4d4d" d="M10 16h3v1h-3zM10 17h3v1h-3zM10 18h3v1h-3zM10 19h3v1h-3zM10 20h3v1h-3zM10 21h3v1h-3zM10 22h3v1h-3zM10 23h3v1h-3zM10 24h3v1h-3zM10 25h3v1h-3z"></path><path fill="#4a5568" d="M6 10h1v1h-1zM9 11h1v1h-1zM6 21h1v1h-1zM9 21h1v1h-1z"></path></svg>
+<div class="dust" style="position: absolute; left: 60px; top: 640px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 0s"></div>
+<div class="dust" style="position: absolute; left: 220px; top: 700px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 3.5s"></div>
+<div class="dust" style="position: absolute; left: 320px; top: 600px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 6.5s"></div>
+<div class="dust" style="position: absolute; left: 140px; top: 540px; width: 3px; height: 3px; background: #e8edf3; opacity: 0.3; animation-delay: 8s"></div>
+</div>
+<main style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; padding: 18px 16px 24px">
+
+<header style="display: flex; align-items: center; gap: 12px">
+<a href="Main.dc.html" aria-label="Back" class="nt pn" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; color: #c6ff3d; text-decoration: none"><svg viewBox="0 0 12 12" width="16" height="16" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M3 5h8v2h-8zM4 3h2v2h-2zM2 4h2v4h-2zM4 7h2v2h-2zM6 2h1v1h-1zM6 9h1v1h-1z"></path></svg></a>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+<span class="lbl">SLOT 3 OF 12</span>
+<h1 style="margin: 0; font-family: Silkscreen, monospace; font-weight: 700; font-size: 20px; color: #ffffff">MARCH</h1>
+</div>
+<span class="lbl" style="display: flex; align-items: center; gap: 6px; color: #c6ff3d; box-shadow: inset 0 0 0 2px #c6ff3d; padding: 6px 8px"><svg viewBox="0 0 12 12" width="12" height="12" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M4 1h4v1h-4zM3 2h1v3h-1zM8 2h1v3h-1zM2 5h8v6h-8zM5 7h2v2h-2z"></path></svg>LOCKED</span>
+</header>
+
+<section aria-label="Challenge" class="nt pn" style="padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<h2 style="margin: 0; font-family: Silkscreen, monospace; font-weight: 700; font-size: 18px; color: #ffffff">PULL-UPS · MAX REPS</h2>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<div style="display: flex; flex-direction: column; gap: 2px"><span class="lbl">DOMAIN</span><span style="font-size: 21px">Strength</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px"><span class="lbl">METRIC</span><span style="font-size: 21px">Reps, higher</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px"><span class="lbl">WEEKLY</span><span style="font-size: 21px">3 sessions</span></div>
+</div>
+<div style="height: 2px; background: #232c3b"></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<div class="nt" style="padding: 10px 12px; background: #0a0d12; display: flex; flex-direction: column; gap: 2px"><span class="lbl">BASELINE</span><span style="font-size: 34px; line-height: 1">12</span></div>
+<div class="nt" style="padding: 10px 12px; background: #0a0d12; display: flex; flex-direction: column; gap: 2px"><span class="lbl">TARGET</span><span style="font-size: 34px; line-height: 1">18</span></div>
+</div>
+<span style="font-size: 18px; color: #8794a6">Target locked 1 Mar. Baseline closed 3 Mar.</span>
+</section>
+
+<section aria-label="Entries" class="nt pn" style="padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; justify-content: space-between"><span class="lbl">ENTRIES</span><span class="lbl">BEST COUNTS</span></div>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{entries}}" as="e" hint-placeholder-count="3">
+<li style="display: grid; grid-template-columns: 72px 1fr auto; align-items: center; gap: 8px; padding: 6px 10px; background: {{e.bg}}; box-shadow: inset 0 0 0 2px {{e.edge}}">
+<span style="color: #8794a6">{{e.date}}</span>
+<span style="font-size: 24px; color: {{e.color}}">{{e.value}}</span>
+<span class="lbl" style="font-size: 9px">{{e.source}}</span>
+</li>
+</sc-for>
+</ul>
+<div style="display: grid; grid-template-columns: 96px 1fr 88px; gap: 6px; align-items: end">
+<label style="display: flex; flex-direction: column; gap: 4px"><span class="lbl" style="font-size: 9px">DATE</span><input type="text" class="inp" value="{{draftDate}}" onChange="{{onDate}}"></label>
+<label style="display: flex; flex-direction: column; gap: 4px"><span class="lbl" style="font-size: 9px">REPS</span><input type="text" class="inp" inputmode="numeric" placeholder="0" value="{{draftVal}}" onChange="{{onVal}}"></label>
+<button type="button" onClick="{{addEntry}}" class="nt btn">ADD</button>
+</div>
+</section>
+
+<section aria-label="Result" class="nt pn" style="padding: 16px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end">
+<div style="display: flex; flex-direction: column; gap: 2px"><span class="lbl">RESULT</span><span style="font-size: 44px; line-height: 1; color: #c6ff3d">{{best}}<span style="font-size: 20px; color: #6f7c8e"> reps</span></span></div>
+<div style="display: flex; flex-direction: column; gap: 2px; align-items: flex-end"><span class="lbl">SCORE</span><span style="font-size: 44px; line-height: 1; color: #ffffff">{{score}}</span></div>
+</div>
+<div role="img" aria-label="Score meter" style="position: relative; height: 16px; background: #0a0d12; box-shadow: inset 0 0 0 2px #232c3b">
+<div style="position: absolute; left: 2px; top: 2px; bottom: 2px; width: {{fillW}}; background: repeating-linear-gradient(90deg, transparent 0 5px, rgba(0,0,0,0.35) 5px 6px), linear-gradient(90deg, #f2f2f2 0 54px, #3ecf6a 54px 108px, #f5d33b 108px 162px, #3d8bff 162px 216px, #ff4d4d 216px); background-size: 100% 100%, 322px 100%"></div>
+<div style="position: absolute; left: 83.33%; top: -4px; bottom: -4px; width: 2px; background: #ffffff"></div>
+</div>
+<sc-if value="{{stage0}}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{arm}}" class="nt btn2" style="box-shadow: inset 0 0 0 2px #c6ff3d; color: #c6ff3d">FINALIZE RESULT</button>
+</sc-if>
+<sc-if value="{{stage1}}" hint-placeholder-val="{{ false }}">
+<div style="display: grid; grid-template-columns: 1fr 96px; gap: 6px">
+<button type="button" onClick="{{confirm}}" class="nt btn pulse" style="background: #f5d33b">TAP AGAIN TO LOCK</button>
+<button type="button" onClick="{{cancel}}" class="nt btn2">CANCEL</button>
+</div>
+</sc-if>
+<sc-if value="{{stage2}}" hint-placeholder-val="{{ false }}">
+<div class="nt btn">FINAL · {{score}} PTS</div>
+</sc-if>
+</section>
+
+</main>
+<div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; z-index: 50; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0 1px, transparent 1px 3px)"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":880}}'>
+class Component extends DCLogic {
+renderVals() {
+const s = Object.assign({ stage: 0, draftDate: '14 Mar', draftVal: '', entries: [
+{ date: '02 Mar', value: 12, source: 'MANUAL' },
+{ date: '07 Mar', value: 13, source: 'MANUAL' },
+{ date: '11 Mar', value: 15, source: 'MOTRA' }
+] }, this.state || {});
+const best = Math.max(...s.entries.map((e) => e.value));
+const score = Math.max(0, Math.min(120, Math.round(100 * (best - 12) / (18 - 12))));
+const entries = s.entries.map((e) => {
+const top = e.value === best;
+return Object.assign({}, e, { bg: top ? 'rgba(198,255,61,0.08)' : '#0a0d12', edge: top ? '#c6ff3d' : 'transparent', color: top ? '#c6ff3d' : '#e6edf3' });
+});
+return {
+entries, best, score,
+fillW: 'calc((100% - 4px) * ' + (score / 120).toFixed(4) + ')',
+draftDate: s.draftDate, draftVal: s.draftVal,
+stage0: s.stage === 0, stage1: s.stage === 1, stage2: s.stage === 2,
+onDate: (e) => this.setState({ draftDate: e.target.value }),
+onVal: (e) => this.setState({ draftVal: e.target.value }),
+addEntry: () => {
+const v = parseFloat(String(s.draftVal).replace(',', '.'));
+if (!isFinite(v) || s.stage === 2) return;
+this.setState({ entries: s.entries.concat([{ date: s.draftDate || '—', value: v, source: 'MANUAL' }]), draftVal: '' });
+},
+arm: () => this.setState({ stage: 1 }),
+cancel: () => this.setState({ stage: 0 }),
+confirm: () => this.setState({ stage: 2 })
+};
+}
+}
+</script>
+</body>
+</html>
