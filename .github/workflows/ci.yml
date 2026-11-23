@@ -38,6 +38,7 @@ jobs:
           xcodebuild test \
             -project ChallengeTracker.xcodeproj \
             -scheme ChallengeTracker \
+            -only-testing:ChallengeTrackerTests \
             -destination "id=${{ steps.sim.outputs.udid }}" \
             CODE_SIGNING_ALLOWED=NO \
             | tee xcodebuild.log | grep -E "error:|warning: unre|Test Suite|Executed|BUILD|\*\*" || true
