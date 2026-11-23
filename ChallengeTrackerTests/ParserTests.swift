@@ -222,3 +222,43 @@ struct InputFormatTests {
         #expect(InputFormat.kind(for: try #require(c.challenge(id: "the-cut"))) == .decimal(maxDecimals: 2))
     }
 }
+
+@MainActor
+struct ImportTests {
+    func benchWorkout(_ sets: [(Int, Double)]) -> Workout {
+        Workout(date: T.d(2, 10, 7), kind: .challenge, source: .motra, title: "Push",
+                exercises: [ParsedExercise(name: "Bench Press", sets: sets.enumerated().map {
+                    ParsedSet(index: $0.offset + 1, setType: .normal, reps: $0.element.0, weightKg: $0.element.1)
+                })])
+    }
+
+    @Test func benchOnlyCountsPlainBenchPress() throws {
+        let ch = try #require(T.catalogue.challenge(id: "bench-e1rm"))
+        #expect(MotraParser.counts("Bench Press", counted: ch.countedExercises))
+        #expect(!MotraParser.counts("Machine Incline Bench Press", counted: ch.countedExercises))
+    }
+
+    @Test func oneEntryPerWorkoutWithBestEstimate() throws {
+        let ch = try #require(T.catalogue.challenge(id: "bench-e1rm"))
+        let w = benchWorkout([(5, 90), (3, 95), (8, 80)])
+        let parsed = ParsedWorkout(name: "Push", date: w.date, durationMinutes: nil, volumeKg: nil, kcal: nil, exercises: w.exercises ?? [])
+        let sug = try #require(MotraParser.suggestedValue(workout: parsed, challenge: ch, counted: ch.countedExercises))
+        #expect(sug.value == 105)          // 5 × 90 → 105, beats 3 × 95 (104.5) and 8 × 80 (101.5)
+        #expect(sug.reps == 5)
+
+        var s = T.fresh()
+        T.put(&s, 2, "bench-e1rm", b: 90, t: 100)
+        let entry = Entry(month: 2, date: w.date, value: sug.value, weightKg: sug.weightKg, reps: sug.reps, source: .motra)
+        let e1 = T.engine(s, T.d(2, 10, 9))
+        try YearActions.importWorkout(&s, workout: w, entry: entry, engine: e1)
+        // Importing the same workout again replaces it instead of adding a second entry.
+        var again = benchWorkout([(5, 92.5)])
+        again.id = UUID()
+        let e2 = T.engine(s, T.d(2, 10, 9))
+        try YearActions.importWorkout(&s, workout: again, entry: Entry(month: 2, date: w.date, value: 108, source: .motra), engine: e2)
+        #expect(s.workouts.count == 1)
+        #expect(s.entries.count == 1)
+        #expect(s.entries[0].value == 108)
+        #expect(s.entries[0].workoutId == s.workouts[0].id)
+    }
+}

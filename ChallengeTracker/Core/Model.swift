@@ -136,6 +136,8 @@ struct Entry: Codable, Equatable, Identifiable, Sendable {
     var weightKg: Double?
     var reps: Int?
     var source: EntrySource = .manual
+    /// The workout this entry came from (imports, HealthKit). One entry per workout.
+    var workoutId: UUID?
 }
 
 enum SetType: String, Codable, Sendable {

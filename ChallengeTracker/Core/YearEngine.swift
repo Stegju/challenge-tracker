@@ -299,6 +299,23 @@ enum YearActions {
         state.update(month) { $0.setupLockedAt = engine.now }
     }
 
+    /// Saves an imported workout with at most one entry (its best set). Importing the same
+    /// workout again (same source, start and name) replaces the earlier copy and its entry.
+    static func importWorkout(_ state: inout YearState, workout: Workout, entry: Entry?, engine: YearEngine) throws {
+        var w = workout
+        if let old = state.workouts.first(where: { $0.source == w.source && $0.date == w.date && $0.title == w.title }) {
+            w.id = old.id
+            state.workouts.removeAll { $0.id == old.id }
+            state.entries.removeAll { $0.workoutId == old.id && !engine.resolve($0.month).isFinal }
+        }
+        state.workouts.append(w)
+        if var e = entry {
+            e.workoutId = w.id
+            let alreadyFinalCopy = state.entries.contains { $0.workoutId == w.id }
+            if !alreadyFinalCopy { try addEntry(&state, e, engine: engine) }
+        }
+    }
+
     static func addEntry(_ state: inout YearState, _ entry: Entry, engine: YearEngine) throws {
         let r = engine.resolve(entry.month)
         guard r.isLocked, !r.isFinal, !r.isForfeit else { throw ActionError.locked }

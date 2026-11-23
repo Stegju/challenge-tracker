@@ -146,6 +146,13 @@ final class AppStore {
         }
     }
 
+    @discardableResult
+    func importWorkout(_ w: Workout, entry: Entry?) -> Bool {
+        mutate("Imported \(w.title ?? "workout")") { s, e in
+            try YearActions.importWorkout(&s, workout: w, entry: entry, engine: e)
+        }
+    }
+
     func deleteEntry(_ id: UUID) {
         mutate("Deleted entry") { s, e in try YearActions.deleteEntry(&s, id: id, engine: e) }
     }

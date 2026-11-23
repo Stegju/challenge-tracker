@@ -190,14 +190,12 @@ struct ImportView: View {
         let anyCounts = w.exercises.contains { MotraParser.counts($0.name, counted: counted) }
         let workout = Workout(date: date, kind: anyCounts ? .challenge : .other, source: .motra, title: w.name,
                               durationMinutes: w.durationMinutes, notes: nil, exercises: w.exercises)
-        store.addWorkout(workout)
+        var entry: Entry? = nil
         if let m = month, let v = entryValue {
-            let entry = Entry(month: m, date: date, value: v.value, weightKg: v.weightKg, reps: v.reps, source: .motra)
-            if store.addEntry(entry, alsoLogSession: false) {
-                store.message = "Workout and entry saved."
-            }
-        } else {
-            store.message = "Workout saved."
+            entry = Entry(month: m, date: date, value: v.value, weightKg: v.weightKg, reps: v.reps, source: .motra)
+        }
+        if store.importWorkout(workout, entry: entry) {
+            store.message = entry == nil ? "Workout saved." : "Workout and entry saved."
         }
         draft.workout = nil
         draft.text = ""
