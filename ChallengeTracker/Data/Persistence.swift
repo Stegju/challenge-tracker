@@ -5,8 +5,10 @@ struct AppSettings: Codable, Equatable {
     var testMode = false
     var testDate: Date = DemoData.defaultTestDate
     var lastExport: Date?
+    /// Other (non-challenge) workouts in a normal week, for momentum.
+    var otherWorkoutsPerWeek = 4
 
-    enum CodingKeys: String, CodingKey { case notifications, testMode, testDate, lastExport }
+    enum CodingKeys: String, CodingKey { case notifications, testMode, testDate, lastExport, otherWorkoutsPerWeek }
 
     init() {}
 
@@ -16,6 +18,7 @@ struct AppSettings: Codable, Equatable {
         testMode = try c.decodeIfPresent(Bool.self, forKey: .testMode) ?? false
         testDate = try c.decodeIfPresent(Date.self, forKey: .testDate) ?? DemoData.defaultTestDate
         lastExport = try c.decodeIfPresent(Date.self, forKey: .lastExport)
+        otherWorkoutsPerWeek = try c.decodeIfPresent(Int.self, forKey: .otherWorkoutsPerWeek) ?? 4
     }
 }
 

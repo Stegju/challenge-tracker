@@ -14,6 +14,12 @@ struct WidgetSnapshot: Codable, Equatable, Sendable {
     var points: Int           // year total
     var isBoss: Bool
     var updated: Date
+    /// Before the year starts: the moment 2027 begins (widget shows a countdown).
+    var countdownTo: Date?
+    /// Before the year starts: January's challenge, nil if not chosen yet.
+    var januaryName: String?
+    /// Before the year starts: January has both baseline and target.
+    var januaryReady: Bool?
 
     static let fileName = "widget.json"
     static let appGroup = "group.jpsdigitalventures.challengetracker"

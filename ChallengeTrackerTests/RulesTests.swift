@@ -13,11 +13,11 @@ struct LockingTests {
         #expect(rules.isLocked(4, now: at))
     }
 
-    @Test func baselineWindowIsDaysOneToThree() {
-        #expect(rules.canEditBaseline(3, now: T.d(3, 3, 23)))
-        #expect(!rules.canEditBaseline(3, now: T.d(3, 4, 0)))
-        #expect(rules.canEditBaseline(3, now: T.d(2, 20)))
-        #expect(!rules.canEditTarget(3, now: T.d(3, 2)))
+    @Test func setupWindowIsDaysOneToSeven() {
+        #expect(rules.inSetupWindow(3, now: T.d(2, 20)))
+        #expect(rules.inSetupWindow(3, now: T.d(3, 7, 23)))
+        #expect(!rules.inSetupWindow(3, now: T.d(3, 8, 0)))
+        #expect(rules.setupLastDay(3) == T.cal.date(year: 2027, month: 3, day: 7))
     }
 
     @Test func yearBoundary() {
@@ -161,25 +161,69 @@ struct EngineTests {
         var s = T.fresh()
         let now = T.d(12, 20, year: 2026)
         let ch = T.catalogue.challenge(id: "pullups-max")!
-        let e911 = T.engine(s, now)
-        try YearActions.chooseNew(&s, month: 1, challenge: ch, engine: e911)
-        let e131 = T.engine(s, now)
-        try YearActions.setBaseline(&s, month: 1, value: 12, engine: e131)
+        let e1 = T.engine(s, now)
+        try YearActions.chooseNew(&s, month: 1, challenge: ch, engine: e1)
+        let e2 = T.engine(s, now)
+        try YearActions.setBaseline(&s, month: 1, value: 12, engine: e2)
+        let e3 = T.engine(s, now)
         #expect(throws: YearActions.ActionError.self) {
-            let e5311 = T.engine(s, now)
-            try YearActions.setTarget(&s, month: 1, value: 10, engine: e5311)
+            try YearActions.setTarget(&s, month: 1, value: 10, engine: e3)
         }
-        let e3192 = T.engine(s, now)
-        try YearActions.setTarget(&s, month: 1, value: 18, engine: e3192)
+        let e4 = T.engine(s, now)
+        try YearActions.setTarget(&s, month: 1, value: 18, engine: e4)
         #expect(s.slot(1).target == 18)
-        // Target frozen after lock, baseline still editable on day 2.
-        #expect(throws: YearActions.ActionError.self) {
-            let e562 = T.engine(s, T.d(1, 2))
-            try YearActions.setTarget(&s, month: 1, value: 20, engine: e562)
-        }
-        let e4892 = T.engine(s, T.d(1, 2))
-        try YearActions.setBaseline(&s, month: 1, value: 11, engine: e4892)
+        // Both still editable in the first week after the challenge locks.
+        let e5 = T.engine(s, T.d(1, 6))
+        try YearActions.setTarget(&s, month: 1, value: 20, engine: e5)
+        let e6 = T.engine(s, T.d(1, 6))
+        try YearActions.setBaseline(&s, month: 1, value: 11, engine: e6)
         #expect(s.slot(1).baseline == 11)
+        #expect(s.slot(1).target == 20)
+        // Frozen from day 8.
+        let e7 = T.engine(s, T.d(1, 8, 0))
+        #expect(throws: YearActions.ActionError.self) {
+            try YearActions.setTarget(&s, month: 1, value: 22, engine: e7)
+        }
+    }
+
+    @Test func lockInFreezesEarly() throws {
+        var s = T.fresh()
+        T.put(&s, 3, "pullups-max", b: 12, t: 18)
+        let e1 = T.engine(s, T.d(3, 2))
+        try YearActions.lockInSetup(&s, month: 3, engine: e1)
+        let e2 = T.engine(s, T.d(3, 3))
+        #expect(!e2.resolve(3).setupOpen)
+        #expect(throws: YearActions.ActionError.self) {
+            try YearActions.setTarget(&s, month: 3, value: 20, engine: e2)
+        }
+    }
+
+    @Test func lockInNeedsBothValues() {
+        var s = T.fresh()
+        T.put(&s, 3, "pullups-max", b: 12, t: nil)
+        let e = T.engine(s, T.d(3, 2))
+        #expect(throws: YearActions.ActionError.self) {
+            try YearActions.lockInSetup(&s, month: 3, engine: e)
+        }
+    }
+
+    @Test func missingTargetForfeitsOnlyAfterSetupWindow() {
+        var s = T.fresh()
+        T.put(&s, 3, "pullups-max", b: nil, t: nil)
+        #expect(!T.engine(s, T.d(3, 5)).resolve(3).isForfeit)
+        #expect(T.engine(s, T.d(3, 8, 1)).resolve(3).isForfeit)
+        T.put(&s, 4, "row-2k", b: 480, t: nil)
+        #expect(T.engine(s, T.d(4, 9)).resolve(4).isForfeit)
+    }
+
+    @Test func improvementPerDomain() {
+        let s = DemoData.make(catalogue: T.catalogue, until: DemoData.defaultTestDate)
+        let imp = T.engine(s, DemoData.defaultTestDate).domainImprovement()
+        // Strength: bench 90 → 102.5 (+13.9 %) and pull-ups 12 → 15 (+25 %), averaged.
+        #expect(abs((imp[.strength] ?? 0) - (12.5 / 90 + 0.25) / 2) < 0.0001)
+        // Speed: 5K 23:10 → 21:25, lower is better.
+        #expect(abs((imp[.speed] ?? 0) - 105.0 / 1390) < 0.0001)
+        #expect(imp[.endurance] == nil)
     }
 
     @Test func finalizeUsesBestEntry() throws {

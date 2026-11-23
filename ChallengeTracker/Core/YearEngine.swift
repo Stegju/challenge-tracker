@@ -15,7 +15,9 @@ struct ResolvedSlot: Equatable, Sendable {
     var isLocked: Bool
     var phase: MonthPhase
     var isFinal: Bool
-    /// No challenge or no target at lock.
+    /// Baseline and target can still change (setup window open, not locked in, not final, not a redo).
+    var setupOpen: Bool
+    /// No challenge at the 1st, or no baseline/target when the setup window closed.
     var isForfeit: Bool
     /// Score with the current result (final or live). nil if it cannot be computed yet.
     var score: Int?
@@ -72,7 +74,9 @@ struct YearEngine {
         let entries = state.entries(for: month)
         let best = challenge.flatMap { ch in Scoring.best(entries.map(\.value), direction: ch.direction) }
         let result = slot.isFinal ? slot.finalResult : best
-        let forfeit = locked && (challenge == nil || target == nil)
+        let setupOpen = slot.kind != .redo && !slot.isFinal && slot.setupLockedAt == nil
+            && rules.inSetupWindow(month, now: now)
+        let forfeit = locked && (challenge == nil || (!setupOpen && (target == nil || baseline == nil)))
         var score: Int? = nil
         if forfeit {
             score = 0
@@ -84,7 +88,7 @@ struct YearEngine {
         return ResolvedSlot(month: month, slot: slot, challenge: challenge, kind: slot.kind,
                             baseline: baseline, target: target, entries: entries, best: best,
                             result: result, isLocked: locked, phase: rules.phase(month, now: now),
-                            isFinal: slot.isFinal, isForfeit: forfeit, score: score)
+                            isFinal: slot.isFinal, setupOpen: setupOpen, isForfeit: forfeit, score: score)
     }
 
     var all: [ResolvedSlot] { (1...12).map(resolve) }
@@ -185,9 +189,28 @@ struct YearEngine {
         return 3
     }
 
+    /// Relative improvement from baseline to result (final or live), positive = better.
+    /// 0.25 means 25 % better than the baseline.
+    func improvement(_ r: ResolvedSlot) -> Double? {
+        guard r.isLocked, !r.isForfeit, let ch = r.challenge, let b = r.baseline, b != 0, let res = r.result else { return nil }
+        let raw = (res - b) / abs(b)
+        return ch.direction == .higher ? raw : -raw
+    }
+
+    /// Average improvement per domain over every attempt with a result so far.
+    func domainImprovement() -> [Domain: Double] {
+        var sums: [Domain: (Double, Int)] = [:]
+        for r in all {
+            guard let ch = r.challenge, let v = improvement(r) else { continue }
+            let cur = sums[ch.domain] ?? (0, 0)
+            sums[ch.domain] = (cur.0 + v, cur.1 + 1)
+        }
+        return sums.mapValues { $0.0 / Double($0.1) }
+    }
+
     func canFinalize(_ month: Int) -> Bool {
         let r = resolve(month)
-        return r.isLocked && !r.isFinal && !r.isForfeit && r.best != nil && r.baseline != nil
+        return r.isLocked && !r.isFinal && !r.isForfeit && r.best != nil && r.baseline != nil && r.target != nil
     }
 }
 
@@ -212,6 +235,7 @@ enum YearActions {
             s.challengeId = challenge.id
             s.snapshot = challenge
             s.sourceMonth = nil
+            s.setupLockedAt = nil
         }
     }
 
@@ -240,12 +264,13 @@ enum YearActions {
             s.sourceMonth = nil
             s.baseline = nil
             s.target = nil
+            s.setupLockedAt = nil
         }
     }
 
     static func setBaseline(_ state: inout YearState, month: Int, value: Double?, engine: YearEngine) throws {
         let s = state.slot(month)
-        guard s.kind != .redo, engine.rules.canEditBaseline(month, now: engine.now), !s.isFinal else { throw ActionError.locked }
+        guard engine.resolve(month).setupOpen else { throw ActionError.locked }
         if let ch = engine.resolve(month).challenge,
            let p = Scoring.validate(baseline: value, target: s.target, direction: ch.direction) {
             throw ActionError.invalidTarget(p)
@@ -255,12 +280,23 @@ enum YearActions {
 
     static func setTarget(_ state: inout YearState, month: Int, value: Double?, engine: YearEngine) throws {
         let s = state.slot(month)
-        guard s.kind != .redo, engine.rules.canEditTarget(month, now: engine.now) else { throw ActionError.locked }
+        guard engine.resolve(month).setupOpen else { throw ActionError.locked }
         if let ch = engine.resolve(month).challenge,
            let p = Scoring.validate(baseline: s.baseline, target: value, direction: ch.direction) {
             throw ActionError.invalidTarget(p)
         }
         state.update(month) { $0.target = value }
+    }
+
+    /// Freezes baseline and target before the setup window closes.
+    static func lockInSetup(_ state: inout YearState, month: Int, engine: YearEngine) throws {
+        let r = engine.resolve(month)
+        guard r.setupOpen, r.isChosen else { throw ActionError.locked }
+        guard r.baseline != nil, r.target != nil else { throw ActionError.notAllowed }
+        if let ch = r.challenge, let p = Scoring.validate(baseline: r.baseline, target: r.target, direction: ch.direction) {
+            throw ActionError.invalidTarget(p)
+        }
+        state.update(month) { $0.setupLockedAt = engine.now }
     }
 
     static func addEntry(_ state: inout YearState, _ entry: Entry, engine: YearEngine) throws {

@@ -69,10 +69,10 @@ struct ImportView: View {
     private var emptyHint: some View {
         VStack(alignment: .leading, spacing: 6) {
             Lbl("HOW IT WORKS")
-            Text("Paste a workout and the app reads the exercises and sets. Exercises that count for this month suggest an entry. Every import also logs a workout for the This week panel.")
+            Text("Paste a workout and the app reads the exercises and sets. If an exercise counts for this month's challenge, its best set becomes an entry automatically. Every import also logs a workout for the This week panel.")
                 .font(.vt(19)).foregroundStyle(Palette.soft)
                 .fixedSize(horizontal: false, vertical: true)
-            Text("HealthKit and the share sheet come in v1.1: they need one more session on the Mac.")
+            Text("HealthKit and sharing straight from Motra come next.")
                 .font(.vt(17)).foregroundStyle(Palette.infoText)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -146,7 +146,7 @@ struct ImportView: View {
         }()
         if let m = month, let ch, let s = sug {
             VStack(alignment: .leading, spacing: 4) {
-                Lbl("SUGGESTED ENTRY", color: Palette.lime)
+                Lbl("ENTRY ADDED AUTOMATICALLY", color: Palette.lime)
                 (Text("\(ch.name): ") + Text(ValueFormat.formatWithUnit(s.value, ch)).foregroundColor(Palette.lime)
                  + Text(" on \(Fmt.dayMonth(w.date ?? store.now, store.calendar))"))
                     .font(.vt(22))
@@ -154,12 +154,8 @@ struct ImportView: View {
             .padding(.horizontal, 16).padding(.vertical, 12)
             .frame(maxWidth: .infinity, alignment: .leading)
             .notched(fill: Palette.lime.opacity(0.08), edge: Palette.lime)
-            HStack(spacing: 8) {
-                Button("ADD ENTRY") { save(w, month: m, entryValue: s) }
-                    .buttonStyle(PrimaryButtonStyle())
-                Button("SETS ONLY") { save(w, month: m, entryValue: nil) }
-                    .buttonStyle(SecondaryButtonStyle())
-            }
+            Button("SAVE WORKOUT + ENTRY") { save(w, month: m, entryValue: s) }
+                .buttonStyle(PrimaryButtonStyle())
         } else {
             Text(month == nil ? "No locked challenge for this date, so it saves as a workout only."
                               : "Nothing here counts for this month's challenge. Toggle exercises to count them, or save the sets.")
@@ -285,7 +281,7 @@ struct ExercisesView: View {
                 ForEach(Array(ex.sets.enumerated()), id: \.offset) { _, s in
                     let dim = s.setType != .normal
                     HStack(spacing: 8) {
-                        Text("\(s.index)").frame(width: 20, alignment: .leading)
+                        Text(s.index == 0 ? (s.setType == .warmup ? "W" : "D") : "\(s.index)").frame(width: 20, alignment: .leading)
                         Text("\(s.reps) × \(s.weightKg.map { "\(ValueFormat.formatNumber($0)) kg" } ?? "BW")")
                         Spacer()
                         if dim { Lbl(s.setType == .warmup ? "WARM-UP" : "DROP SET", size: 9) }

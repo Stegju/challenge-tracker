@@ -64,6 +64,27 @@ struct MomentumTests {
         #expect(abs(r.m - 1.0) < 0.05)
     }
 
+    @Test func normalWeekCalibration() {
+        // Training every day: 3 challenge sessions + 4 other workouts.
+        var w = workouts(weeks: 8, weekdays: [0, 2, 4])
+        w += workouts(weeks: 8, weekdays: [1, 3, 5, 6], kind: .other)
+        var c = MomentumConfig.standard
+        c.expectedOtherPerWeek = 4
+        let r = MomentumEngine.run(workouts: w, bestDays: [], dose: { _ in 3 }, start: start,
+                                   end: cal.addingDays(55, to: start), calendar: cal, config: c)
+        #expect(r.mood == .pumped)
+        #expect(abs(r.m - 1.0) < 0.05)
+        // A new best on top lifts it to on fire, and it fades back within about a week.
+        let best = cal.addingDays(48, to: start)
+        let withBest = MomentumEngine.run(workouts: w, bestDays: [best], dose: { _ in 3 }, start: start,
+                                          end: cal.addingDays(57, to: start), calendar: cal, config: c)
+        #expect(withBest.days[50].mood == .onfire)
+        #expect(withBest.days[54].mood == .onfire)
+        #expect(withBest.mood == .pumped)
+        // Without the best it never gets there.
+        #expect(!r.days.contains { $0.mood == .onfire })
+    }
+
     @Test func hysteresisHoldsNearBoundary() {
         // Just above the pumped threshold but within the margin: stay steady.
         #expect(MomentumEngine.nextMood(current: .steady, m: 0.87, daysInMood: 3) == .steady)

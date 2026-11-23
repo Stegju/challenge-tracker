@@ -12,7 +12,7 @@ Visual reference: `docs/design/` (read `docs/design/README.md` first).
 
 1. Before the 1st, pick next month's challenge from the catalogue (or pick a redo).
 2. Set baseline (optional until day 3) and target.
-3. At 00:00 on the 1st the slot locks.
+3. At 00:00 on the 1st the challenge locks. Baseline and target stay editable through day 7 (a test week), or until locked in by hand, then freeze.
 4. Log entries during the month. The best entry is the result.
 5. Finalize (two taps). Score 0 to 120.
 6. Points add to the year total, which drives the barbell. The mascot reacts to *momentum* (training consistency and recent progress), not to the score.
@@ -48,8 +48,8 @@ Visual reference: `docs/design/` (read `docs/design/README.md` first).
 1. 12 slots, Jan to Dec 2027. Each is a new challenge or a redo. Exactly 2 redos per year (10 challenges fill the other 10). Murph is pre-assigned to December and cannot be picked or redone. January cannot be a redo. If the remaining open months equal the remaining required picks, the picker says so (e.g. "3 months left: 1 challenge + 2 redos").
 2. **Choosing:** any time before the 1st, from the picker (see screens). Redos are chosen exactly like new challenges, typically the month before. Nothing is pre-assigned.
 3. **New tab** lists catalogue challenges not yet used this year. **Redo tab** lists challenges already finished this year with their score. A challenge already at 120 is shown but disabled (cannot improve).
-4. **Lock:** at 00:00 local on the 1st, challenge and target freeze. Baseline can still be entered on days 1 to 3, then freezes.
-5. **Forfeit:** no challenge or no target at lock scores 0.
+4. **Lock:** at 00:00 local on the 1st the challenge freezes. Baseline and target can be entered or changed until the end of day 7 (`LockConfig.setupDays`), then freeze. A two-tap LOCK IN freezes them earlier. Entries can be logged from the 1st.
+5. **Forfeit:** no challenge on the 1st, or no baseline or no target at the end of day 7, scores 0.
 6. **Result:** best entry. Best = highest if direction is higher, lowest if lower. Finalize = two taps (arm, confirm), then permanent.
 7. **Redo:** reuses the earlier slot's baseline and target. The better score of the two attempts counts toward the total, once. The redo month adds no points of its own.
 8. December is the boss month: Murph, scored like any other, shown in red throughout the UI.
@@ -117,7 +117,7 @@ All screens: dark pixel-arcade gym look (see design README). Tab bar: Home, Year
 
 **Challenge detail** (`Challenge.dc.html`): read-only card from the catalogue (name, domain, metric, weekly dose), baseline and target tiles (editable until lock; baseline until day 3), lock status line, entries list (date, value, source MANUAL/HEALTHKIT/MOTRA; best highlighted), add entry row, result, score preview, two-tap finalize.
 
-**Stats** (`Stats.dc.html`): barbell with partial plate and "2.01 PLATES / SIDE", next plate countdown, radar by domain (best score per domain, dashed ring at 100), score per month bars, start → end table.
+**Stats** (`Stats.dc.html`): barbell with partial plate and "2.01 PLATES / SIDE", next plate countdown, radar by domain (average improvement over baseline per domain, live months included; outer ring = next 10 % step above the best domain), score per month bars, start → end table.
 
 **Import** (`Import.dc.html`, v1.1): paste from clipboard (share extension later), parsed summary (name, date, duration, volume, kcal), matched Watch workout, a row "6 exercises · 1 counts for March" that opens **Exercises**, suggested entry, ADD ENTRY / SETS ONLY.
 
@@ -125,12 +125,12 @@ All screens: dark pixel-arcade gym look (see design README). Tab bar: Home, Year
 
 **Setup** (`Settings.dc.html`): short rules, notification toggles, HealthKit (v1.1), widget help, test date (simulate a date to check locks; never mutates data), JSON export/restore, reset year (two-tap, red).
 
-**Widget** (`Widget.dc.html`, systemMedium): left = mascot + mood label; right = "MAR · PULL-UPS", big `15 / 18`, score meter, "17D LEFT" and "201 PTS". No barbell. Shares data through an App Group; reload timeline whenever an entry is saved.
+**Widget** (`Widget.dc.html`, systemMedium): before 1 Jan 2027 it shows "2027 STARTS IN n DAYS" and January's pick. During the year: left = mascot + mood label; right = "MAR · PULL-UPS", big `15 / 18`, score meter, "17D LEFT" and "201 PTS". No barbell. Shares data through an App Group; reload timeline whenever an entry is saved.
 
 ## 7. Notifications (local only)
 
 - 7 and 2 days before a lock if the next slot is empty.
-- Day 1 and day 3 if the baseline is blank.
+- Day 1 and day 6 if baseline or target is blank.
 - 3 days before month end if no entries.
 - Day after month end if not finalized.
 - Optional: mascot drops to tired or slumped.
@@ -169,10 +169,10 @@ Derived, never stored: scores, totals, plates, momentum, mood.
 
 ## 11. Open questions
 
-- [ ] Baseline still blank after day 3: currently the month can't score (shows 0 and can't be finalized). Forfeit rule 5 only names challenge and target.
-- [ ] Momentum: with the activity cap at 1.1 and 0.05 hysteresis, 4 sessions a week keeps "on fire" indefinitely after one new best (m settles at 1.10, exit needs < 1.10). Dropping to 3 a week returns to pumped in about a week. Tune `MomentumConfig` if that's wrong.
+- [x] Baseline/target timing: settled 24 Nov as a 7-day test week plus manual lock-in (rules 4 and 5).
+- [x] Momentum calibration: a = (challenge + 0.5 · other) / (dose + 0.5 · normal other per week), with "other workouts in a normal week" set in Setup (default 4). A normal week sits at m ≈ 1.0 (pumped); a new best gives about a week of on fire (progress weight raised from 0.25 to 0.5).
 - [ ] Logging an entry also logs a challenge session for that day (if none yet). Confirm that's wanted.
-- [ ] Motra parser is built from the format described in section 8, not a real export. Paste a real one into a test.
+- [x] Motra parser tested against a real export (ParserTests.realExport). Imports add the matching entry automatically.
 
 - [ ] Weekly dose per challenge (all placeholders at 3 sessions). The cut needs a different dose unit, e.g. days on plan or weigh-ins.
 - [ ] Murph standard: vest or not, partitioned or not.

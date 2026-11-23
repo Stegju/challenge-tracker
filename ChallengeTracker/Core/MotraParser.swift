@@ -21,25 +21,25 @@ struct ExerciseBest: Equatable, Sendable {
 }
 
 /// Lenient parser for workout text shared from Motra (spec section 8).
-/// Expected shape (best guess until a real export is checked in):
+/// Real export shape (see ParserTests.realExport):
 ///
-///     Pull Day
-///     16 Nov 2026 at 6:15
-///     Duration: 58 min
-///     Volume: 6,3K kg
-///     Calories: 412 kcal
-///     6 exercises
+///     My workout:
 ///
-///     Pull Up
-///     Warm Up
-///     1: 5 reps x BW
-///     2: 15 reps x BW
-///     Lat Pulldown
-///     1: 10 reps x 65 kg
-///     Drop Set
-///     2: 10 reps x 45 kg
+///     Monday upper
+///     23 Nov 2026 at 6:10
 ///
-///     https://motra.app/...
+///     Duration: 46m
+///     Volume: 6,7K kg
+///     Calories: 307 cal
+///     Exercises: 6
+///
+///     Pull-Up
+///     Warm Up: 7 reps x BW
+///     1: 8 reps x BW
+///     Drop Set: 7 reps x 40 kg
+///
+///     Tracked with Motra.
+///     https://motra.com/share/workout/...
 enum MotraParser {
 
     static func parse(_ text: String, calendar: Calendar = DateProvider.defaultCalendar) -> ParsedWorkout? {
@@ -61,7 +61,11 @@ enum MotraParser {
         for line in lines {
             let lower = line.lowercased()
             if lower.hasPrefix("http") || lower.contains("://") { continue }
-            if lower.contains("motra") && !lower.contains(":") && exercises.isEmpty == false { continue }
+            // "Tracked with Motra." ends the workout; anything after it (a second copy) is ignored.
+            if lower.hasPrefix("tracked with") { break }
+            if lower.contains("motra") && !lower.contains(":") && !exercises.isEmpty { continue }
+            // Header labels like "My workout:".
+            if line.hasSuffix(":") && !line.contains(where: { $0.isNumber }) && exercises.isEmpty { continue }
 
             if date == nil, let d = parseDate(line, calendar: calendar) {
                 date = d
@@ -86,6 +90,7 @@ enum MotraParser {
                 if volume == nil, let v = parseVolume(lower) { volume = v; continue }
                 if kcal == nil, let k = parseKcal(lower) { kcal = k; continue }
                 if lower.range(of: #"^\d+\s+exercises?$"#, options: .regularExpression) != nil { continue }
+                if lower.range(of: #"^exercises?\s*:\s*\d+$"#, options: .regularExpression) != nil { continue }
             }
             if name == nil {
                 name = line
@@ -127,9 +132,11 @@ enum MotraParser {
         return nil
     }
 
-    /// "1: 9 reps x 80 kg", "2: 15 reps x BW", "3. 8 x 72,5 kg", "1: 12 reps" (warm-up/drop label may follow).
+    /// "1: 9 reps x 80 kg", "2: 15 reps x BW", "Warm Up: 15 reps x 40 kg", "Drop Set: 7 reps x 40 kg",
+    /// "3. 8 x 72,5 kg". A warm-up or drop label may also sit on the line before.
+    /// Labelled sets get index 0.
     static func parseSet(_ line: String, type: SetType) -> ParsedSet? {
-        let pattern = #"^(\d+)\s*[:.)]\s*(\d+)\s*(?:reps?)?\s*(?:[x×*]\s*([0-9]+(?:[.,][0-9]+)?\s*(?:kg)?|bw|bodyweight))?\s*(.*)$"#
+        let pattern = #"^(warm[\s-]*up|drop[\s-]*set|\d+)\s*[:.)]\s*(\d+)\s*(?:reps?)?\s*(?:[x×*]\s*([0-9]+(?:[.,][0-9]+)?\s*(?:kg)?|bw|bodyweight))?\s*(.*)$"#
         guard let re = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else { return nil }
         let ns = line as NSString
         guard let m = re.firstMatch(in: line, range: NSRange(location: 0, length: ns.length)) else { return nil }
@@ -137,13 +144,21 @@ enum MotraParser {
             let r = m.range(at: i)
             return r.location == NSNotFound ? nil : ns.substring(with: r)
         }
-        guard let idx = g(1).flatMap({ Int($0) }), let reps = g(2).flatMap({ Int($0) }) else { return nil }
+        guard let head = g(1)?.lowercased(), let reps = g(2).flatMap({ Int($0) }) else { return nil }
+        var t = type
+        var idx = 0
+        if head.hasPrefix("warm") {
+            t = .warmup
+        } else if head.hasPrefix("drop") {
+            t = .drop
+        } else {
+            idx = Int(head) ?? 0
+        }
         var weight: Double? = nil
         if let w = g(3)?.lowercased(), !w.hasPrefix("b") {
             let num = w.replacingOccurrences(of: "kg", with: "").trimmingCharacters(in: .whitespaces)
             weight = ValueFormat.parseNumber(num)
         }
-        var t = type
         if let tail = g(4)?.lowercased() {
             if tail.contains("warm") { t = .warmup }
             if tail.contains("drop") { t = .drop }
@@ -171,24 +186,23 @@ enum MotraParser {
         return calendar.date(year: y, month: mon, day: d, hour: h, minute: mi)
     }
 
-    /// "Duration: 58 min", "1h 5min", "58:12".
+    /// "Duration: 46m", "58 min", "1h 5m", "58:12".
     static func parseDuration(_ lower: String) -> Double? {
-        guard lower.contains("min") || lower.contains("duration") || lower.range(of: #"\d+\s*h\b"#, options: .regularExpression) != nil else { return nil }
+        let looksLikeDuration = lower.contains("duration") || lower.contains("time")
+            || lower.range(of: #"^\d+\s*(h|m|min)\b"#, options: .regularExpression) != nil
+        guard looksLikeDuration else { return nil }
         var minutes = 0.0
         var found = false
         if let r = lower.range(of: #"(\d+)\s*h"#, options: .regularExpression) {
-            let n = lower[r].filter(\.isNumber)
-            minutes += (Double(n) ?? 0) * 60
+            minutes += (Double(lower[r].filter(\.isNumber)) ?? 0) * 60
             found = true
         }
-        if let r = lower.range(of: #"(\d+)\s*min"#, options: .regularExpression) {
-            let n = lower[r].filter(\.isNumber)
-            minutes += Double(n) ?? 0
+        if let r = lower.range(of: #"(\d+)\s*m(?:in)?\b"#, options: .regularExpression) {
+            minutes += Double(lower[r].filter(\.isNumber)) ?? 0
             found = true
         }
         if !found, let r = lower.range(of: #"\d+:\d{2}(:\d{2})?"#, options: .regularExpression),
            let secs = ValueFormat.parseTime(String(lower[r])) {
-            // Treat h:mm:ss or mm:ss
             minutes = secs / 60
             found = true
         }

@@ -3,9 +3,12 @@ import Foundation
 /// All tunable momentum numbers in one place (spec section 5).
 struct MomentumConfig: Sendable {
     var otherWorkoutWeight = 0.5
+    /// Other workouts in a normal week. Added (weighted) to the weekly dose so a normal
+    /// training week scores a = 1.0, whatever the volume. 0 = spec formula.
+    var expectedOtherPerWeek = 0.0
     var activityCap = 1.1
     var progressDecay = 0.8
-    var progressWeight = 0.25
+    var progressWeight = 0.5   // spec had 0.25; 0.5 makes a new best give about a week of "on fire" on a normal week
     var smoothing = 0.3          // m_t = smoothing · x_t + (1 − smoothing) · m_{t−1}
     var initial = 0.6
     var onFire = 1.15
@@ -182,7 +185,8 @@ enum MomentumEngine {
                 os += otherByDay[k] ?? 0
             }
             let doseToday = max(0.5, dose(day))
-            let a = min(c.activityCap, (Double(cs) + c.otherWorkoutWeight * Double(os)) / doseToday)
+            let normalWeek = doseToday + c.otherWorkoutWeight * max(0, c.expectedOtherPerWeek)
+            let a = min(c.activityCap, (Double(cs) + c.otherWorkoutWeight * Double(os)) / normalWeek)
             let isBest = bestSet.contains(t)
             g = max(c.progressDecay * g, isBest ? 1 : 0)
             let x = a + c.progressWeight * g

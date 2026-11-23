@@ -29,6 +29,97 @@ struct ParserTests {
     https://motra.app/w/abc
     """
 
+    /// A real Motra share (23 Nov 2026), pasted twice to check the second copy is ignored.
+    static let realExport = """
+    My workout:
+
+    Monday upper
+    23 Nov 2026 at 6:10
+
+    Duration: 46m
+    Volume: 6,7K kg
+    Calories: 307 cal
+    Exercises: 6
+
+    Machine Incline Bench Press
+    Warm Up: 15 reps x 40 kg
+    1: 8 reps x 80 kg
+    2: 5 reps x 80 kg
+    Drop Set: 7 reps x 40 kg
+
+    Pull-Up
+    Warm Up: 7 reps x BW
+    1: 8 reps x BW
+    2: 5 reps x BW
+
+    Machine Shoulder Press
+    Warm Up: 10 reps x 25 kg
+    1: 8 reps x 32,5 kg
+    Drop Set: 2 reps x 25 kg
+    3: 7 reps x 32,5 kg
+    Drop Set: 3 reps x 25 kg
+
+    Dumbbell Bicep Curl
+    Warm Up: 12 reps x 14 kg
+    1: 5 reps x 20 kg
+    2: 4 reps x 20 kg
+    Drop Set: 6 reps x 14 kg
+
+    Machine Row
+    Warm Up: 14 reps x 80 kg
+    1: 7 reps x 120 kg
+    2: 5 reps x 120 kg
+
+    Cable Bar Overhead Tricep Extension High
+    1: 5 reps x 32,5 kg
+    2: 6 reps x 32,5 kg
+    Drop Set: 4 reps x 25 kg
+
+    Tracked with Motra.
+
+    My workout:
+
+    Monday upper
+    23 Nov 2026 at 6:10
+
+    Duration: 46m
+    Machine Row
+    1: 7 reps x 120 kg
+
+    Tracked with Motra.
+    https://motra.com/share/workout/cb7f4d9b87
+    """
+
+    @Test func realExportHeader() throws {
+        let w = try #require(MotraParser.parse(Self.realExport, calendar: T.cal))
+        #expect(w.name == "Monday upper")
+        #expect(w.date == T.cal.date(year: 2026, month: 11, day: 23, hour: 6, minute: 10))
+        #expect(w.durationMinutes == 46)
+        #expect(w.volumeKg == 6700)
+        #expect(w.kcal == 307)
+    }
+
+    @Test func realExportExercises() throws {
+        let w = try #require(MotraParser.parse(Self.realExport, calendar: T.cal))
+        #expect(w.exercises.map(\.name) == ["Machine Incline Bench Press", "Pull-Up", "Machine Shoulder Press",
+                                            "Dumbbell Bicep Curl", "Machine Row", "Cable Bar Overhead Tricep Extension High"])
+        #expect(w.exercises[1].sets.map(\.setType) == [.warmup, .normal, .normal])
+        #expect(w.exercises[2].sets.map(\.setType) == [.warmup, .normal, .drop, .normal, .drop])
+        #expect(w.exercises[2].sets[1].weightKg == 32.5)
+        #expect(w.exercises[0].sets[0].weightKg == 40)
+        #expect(w.setCount == 22)
+    }
+
+    @Test func realExportBests() throws {
+        let w = try #require(MotraParser.parse(Self.realExport, calendar: T.cal))
+        #expect(MotraParser.best(w.exercises[1])?.reps == 8)               // pull-ups, bodyweight
+        #expect(MotraParser.best(w.exercises[0])?.e1rm == 101.5)           // 8 × 80 kg
+        #expect(MotraParser.best(w.exercises[4])?.e1rm == 148)             // 7 × 120 kg
+        let ch = try #require(T.catalogue.challenge(id: "pullups-max"))
+        let s = try #require(MotraParser.suggestedValue(workout: w, challenge: ch, counted: ch.countedExercises))
+        #expect(s.value == 8)
+    }
+
     @Test func parsesHeaderAndSummary() throws {
         let w = try #require(MotraParser.parse(sample, calendar: T.cal))
         #expect(w.name == "Pull Day")
@@ -93,5 +184,41 @@ struct NotificationTests {
         var t = NotificationToggles()
         t.nextSlotEmpty = false
         #expect(!NotificationPlanner.plan(engine: e, toggles: t).contains { $0.id.hasPrefix("empty") })
+    }
+}
+
+@MainActor
+struct InputFormatTests {
+    @Test func timeFillsFromTheRight() {
+        #expect(InputFormat.formatTime("2125", hours: false) == "21:25")
+        #expect(InputFormat.formatTime("212", hours: false) == "2:12")
+        #expect(InputFormat.formatTime("21", hours: false) == "21")
+        #expect(InputFormat.formatTime("12000", hours: true) == "1:20:00")
+        #expect(InputFormat.formatTime("1:20:00", hours: true) == "1:20:00")
+        #expect(InputFormat.formatTime("1h20abc00", hours: true) == "1:20:00")
+        #expect(InputFormat.formatTime("123456", hours: true) == "1:23:45")   // capped at 5 digits
+        #expect(InputFormat.formatTime("05:30", hours: false) == "5:30")
+    }
+
+    @Test func timeProblems() {
+        #expect(InputFormat.problem("1:75:00", kind: .time(hours: true)) != nil)
+        #expect(InputFormat.problem("21:25", kind: .time(hours: false)) == nil)
+        #expect(InputFormat.problem("", kind: .time(hours: false)) == nil)
+    }
+
+    @Test func decimalsAndIntegers() {
+        #expect(InputFormat.formatDecimal("12,55", maxDecimals: 1) == "12.5")
+        #expect(InputFormat.formatDecimal("1.2.3", maxDecimals: 2) == "1.23")
+        #expect(InputFormat.formatDecimal("abc", maxDecimals: 2) == "")
+        #expect(InputFormat.formatDecimal(",5", maxDecimals: 2) == "0.5")
+        #expect(InputFormat.format("1a8", kind: .integer) == "18")
+    }
+
+    @Test func kindPerChallenge() throws {
+        let c = T.catalogue
+        #expect(InputFormat.kind(for: try #require(c.challenge(id: "hyrox-race"))) == .time(hours: true))
+        #expect(InputFormat.kind(for: try #require(c.challenge(id: "run-5k"))) == .time(hours: false))
+        #expect(InputFormat.kind(for: try #require(c.challenge(id: "pullups-max"))) == .integer)
+        #expect(InputFormat.kind(for: try #require(c.challenge(id: "the-cut"))) == .decimal(maxDecimals: 2))
     }
 }

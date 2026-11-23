@@ -211,6 +211,7 @@ struct CurrentChallengeCard: View {
     var r: ResolvedSlot
     var daysLeft: Int
     @Environment(Router.self) private var router
+    @Environment(AppStore.self) private var store
 
     var body: some View {
         let accent = r.isBoss ? Palette.alert : Palette.lime
@@ -243,6 +244,9 @@ struct CurrentChallengeCard: View {
                             .padding(.bottom, 6)
                     }
                 }
+                if r.setupOpen && (r.baseline == nil || r.target == nil) {
+                    Lbl("SET BASELINE + TARGET BY DAY \(store.rules.config.setupDays)", color: Palette.plateYellow)
+                }
                 VStack(spacing: 4) {
                     ScoreMeter(score: Double(r.score ?? 0))
                     HStack {
@@ -251,18 +255,13 @@ struct CurrentChallengeCard: View {
                         Lbl("100")
                     }
                 }
-                HStack(spacing: 8) {
-                    Button(r.isFinal ? "VIEW RESULT" : "+ LOG ENTRY") { router.push(.challenge(r.month)) }
-                        .buttonStyle(PrimaryButtonStyle(fill: accent))
-                        .layoutPriority(1.4)
-                    Button("DETAILS") { router.push(.challenge(r.month)) }
-                        .buttonStyle(SecondaryButtonStyle())
-                }
+                Button(r.isFinal ? "VIEW RESULT" : "MONTH OVERVIEW") { router.push(.challenge(r.month)) }
+                    .buttonStyle(PrimaryButtonStyle(fill: accent))
             } else {
-                Text(r.isForfeit ? "NO CHALLENGE AT LOCK" : "NOTHING CHOSEN")
+                Text(r.isForfeit ? "FORFEIT · 0 POINTS" : "NOTHING CHOSEN")
                     .font(.heading(18))
                     .foregroundStyle(.white)
-                Text(r.isForfeit ? "No challenge or no target was set at midnight on the 1st. This month scores 0."
+                Text(r.isForfeit ? "No challenge on the 1st, or no baseline and target by day 7. This month scores 0."
                                  : "Choose a challenge for this month.")
                     .font(.vt(20))
                     .foregroundStyle(Palette.muted)

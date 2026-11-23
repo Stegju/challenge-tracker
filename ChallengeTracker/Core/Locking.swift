@@ -1,8 +1,9 @@
 import Foundation
 
 struct LockConfig: Sendable {
-    /// Baseline can be entered on days 1...baselineGraceDays of the month.
-    var baselineGraceDays = 3
+    /// Baseline and target can be entered or changed on days 1...setupDays of the month
+    /// (a test week), unless locked in earlier by hand. The challenge itself locks on the 1st.
+    var setupDays = 7
     /// The next-month card on Home shows this many days before a lock.
     var nextMonthCardDays = 3
     var redosPerYear = 2
@@ -32,9 +33,14 @@ struct LockRules: Sendable {
         return calendar.date(year: config.year, month: month + 1, day: 1)
     }
 
-    /// End of the baseline window: 00:00 on day (grace + 1).
-    func baselineClose(_ month: Int) -> Date {
-        calendar.date(year: config.year, month: month, day: config.baselineGraceDays + 1)
+    /// End of the baseline/target window: 00:00 on day (setupDays + 1).
+    func setupClose(_ month: Int) -> Date {
+        calendar.date(year: config.year, month: month, day: config.setupDays + 1)
+    }
+
+    /// Last day baseline and target can change (day `setupDays`).
+    func setupLastDay(_ month: Int) -> Date {
+        calendar.date(year: config.year, month: month, day: config.setupDays)
     }
 
     func isLocked(_ month: Int, now: Date) -> Bool { now >= lockDate(month) }
@@ -46,8 +52,8 @@ struct LockRules: Sendable {
     }
 
     func canEditChoice(_ month: Int, now: Date) -> Bool { !isLocked(month, now: now) }
-    func canEditTarget(_ month: Int, now: Date) -> Bool { !isLocked(month, now: now) }
-    func canEditBaseline(_ month: Int, now: Date) -> Bool { now < baselineClose(month) }
+    /// Baseline and target window (the slot's manual lock-in is checked by the engine).
+    func inSetupWindow(_ month: Int, now: Date) -> Bool { now < setupClose(month) }
 
     /// Entries are accepted from the lock until the month ends (and later, until finalized,
     /// so a result from the last day can still be typed in).

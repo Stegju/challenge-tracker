@@ -80,28 +80,31 @@ struct StatsView: View {
     // MARK: Radar
 
     private func radarPanel(_ rows: [ResolvedSlot]) -> some View {
-        var best: [Domain: Int] = [:]
-        for r in rows {
-            guard let ch = r.challenge, let s = r.settledScore, !r.isForfeit else { continue }
-            best[ch.domain] = max(best[ch.domain] ?? 0, s)
-        }
+        let imp = store.engine.domainImprovement()
         let order: [Domain] = [.strength, .speed, .endurance, .physique, .hybrid]
-        let values = order.map { Double(best[$0] ?? 0) }
+        let values = order.map { imp[$0] }
+        let top = values.compactMap { $0 }.max() ?? 0
+        // Outer ring: next 10 % step above the best domain (at least 10 %).
+        let scale = max(0.10, (top * 10).rounded(.up) / 10)
+        let labels = zip(order, values).map { d, v -> String in
+            guard let v else { return d.rawValue.uppercased() }
+            return "\(d.rawValue.uppercased()) \(v >= 0 ? "+" : "")\(Int((v * 100).rounded()))%"
+        }
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Lbl("BY DOMAIN · BEST SCORE")
+                Lbl("BY DOMAIN · AVG IMPROVEMENT")
                 Spacer()
-                HStack(spacing: 4) {
-                    DashedLine().stroke(Color.white, style: StrokeStyle(lineWidth: 2, dash: [2, 2])).frame(width: 10, height: 2)
-                    Lbl("100")
-                }
+                Lbl("RING +\(Int((scale * 100).rounded()))%")
             }
-            RadarChart(values: values, labels: order.map { $0.rawValue.uppercased() })
+            RadarChart(values: values.map { max(0, ($0 ?? 0) / scale) }, hasValue: values.map { $0 != nil }, labels: labels)
                 .frame(maxWidth: 330)
                 .aspectRatio(220.0 / 180.0, contentMode: .fit)
                 .frame(maxWidth: .infinity)
                 .accessibilityElement()
-                .accessibilityLabel("Radar: " + zip(order, values).map { "\($0.0.rawValue) \(Int($0.1))" }.joined(separator: ", "))
+                .accessibilityLabel("Average improvement by domain: " + labels.joined(separator: ", "))
+            Text("How much better than your baseline, on average, per domain. Live months count too.")
+                .font(.vt(17)).foregroundStyle(Palette.muted)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(14)
         .panel()
@@ -168,7 +171,7 @@ struct StatsView: View {
             Lbl("START → END")
             Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 0) {
                 GridRow {
-                    Lbl("CHALLENGE", size: 9)
+                    Lbl("CHALLENGE", size: 9).frame(maxWidth: .infinity, alignment: .leading)
                     Lbl("START", size: 9)
                     Lbl("END", size: 9)
                     Lbl("PTS", size: 9).gridColumnAlignment(.trailing)
@@ -180,6 +183,7 @@ struct StatsView: View {
                     Rectangle().fill(Palette.divider).frame(height: 2).gridCellColumns(4)
                     GridRow {
                         Text((r.isRedo ? "↻ " : "") + ch.name).lineLimit(1).minimumScaleFactor(0.7)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         Text(r.baseline.map { ValueFormat.formatWithUnit($0, ch) } ?? "—").foregroundStyle(Palette.muted)
                         Text((r.result.map { ValueFormat.formatWithUnit($0, ch) } ?? "—") + (live && r.result != nil ? "*" : ""))
                         Text("\(r.score ?? 0)\(live ? "*" : "")")
@@ -195,6 +199,7 @@ struct StatsView: View {
             }
         }
         .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .panel()
     }
 }
@@ -208,9 +213,10 @@ struct DashedLine: Shape {
     }
 }
 
-/// Pentagon radar on the artboard's 220 × 180 canvas: outer ring 120, dashed ring at 100.
+/// Pentagon radar on the artboard's 220 × 180 canvas. Values are 0...1 of the outer ring.
 struct RadarChart: View {
-    var values: [Double]   // 0...120, five domains
+    var values: [Double]
+    var hasValue: [Bool]
     var labels: [String]
 
     var body: some View {
@@ -220,7 +226,7 @@ struct RadarChart: View {
             let R = 70 * s
             func pt(_ i: Int, _ v: Double) -> CGPoint {
                 let a = -Double.pi / 2 + Double(i) * 2 * Double.pi / 5
-                let r = R * CGFloat(v / 120)
+                let r = R * CGFloat(min(1, v))
                 return CGPoint(x: c.x + r * CGFloat(cos(a)), y: c.y + r * CGFloat(sin(a)))
             }
             func ring(_ v: Double) -> Path {
@@ -231,36 +237,34 @@ struct RadarChart: View {
                 p.closeSubpath()
                 return p
             }
-            ctx.stroke(ring(40), with: .color(Palette.divider), lineWidth: 1)
-            ctx.stroke(ring(80), with: .color(Palette.divider), lineWidth: 1)
-            ctx.stroke(ring(120), with: .color(Palette.inputEdge), lineWidth: 1.5)
+            ctx.stroke(ring(0.25), with: .color(Palette.divider), lineWidth: 1)
+            ctx.stroke(ring(0.5), with: .color(Palette.divider), lineWidth: 1)
+            ctx.stroke(ring(0.75), with: .color(Palette.divider), lineWidth: 1)
+            ctx.stroke(ring(1), with: .color(Palette.inputEdge), lineWidth: 1.5)
             for i in 0..<5 {
                 var p = Path()
                 p.move(to: c)
-                p.addLine(to: pt(i, 120))
+                p.addLine(to: pt(i, 1))
                 ctx.stroke(p, with: .color(Palette.divider), lineWidth: 1)
             }
-            ctx.stroke(ring(100), with: .color(Color.white.opacity(0.7)), style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
 
             var data = Path()
             for i in 0..<5 {
                 let v = i < values.count ? values[i] : 0
-                if i == 0 { data.move(to: pt(i, max(v, 2))) } else { data.addLine(to: pt(i, max(v, 2))) }
+                if i == 0 { data.move(to: pt(i, max(v, 0.02))) } else { data.addLine(to: pt(i, max(v, 0.02))) }
             }
             data.closeSubpath()
             ctx.fill(data, with: .color(Palette.lime.opacity(0.22)))
             ctx.stroke(data, with: .color(Palette.lime), style: StrokeStyle(lineWidth: 2, lineJoin: .miter))
-            for i in 0..<5 where i < values.count && values[i] > 0 {
+            for i in 0..<5 where i < values.count && i < hasValue.count && hasValue[i] {
                 let p = pt(i, values[i])
                 ctx.fill(Path(CGRect(x: p.x - 3 * s, y: p.y - 3 * s, width: 6 * s, height: 6 * s)), with: .color(Palette.lime))
             }
 
-            let positions: [CGPoint] = [CGPoint(x: 110, y: 10), CGPoint(x: 190, y: 62), CGPoint(x: 160, y: 168),
-                                        CGPoint(x: 60, y: 168), CGPoint(x: 28, y: 64)]
+            let positions: [CGPoint] = [CGPoint(x: 110, y: 10), CGPoint(x: 186, y: 62), CGPoint(x: 160, y: 168),
+                                        CGPoint(x: 60, y: 168), CGPoint(x: 34, y: 62)]
             for i in 0..<min(5, labels.count) {
-                let v = i < values.count ? Int(values[i]) : 0
-                let text = v > 0 ? "\(labels[i]) \(v)" : labels[i]
-                let t = Text(text).font(.label(8 * s)).foregroundColor(Palette.soft)
+                let t = Text(labels[i]).font(.label(8 * s)).foregroundColor(Palette.soft)
                 ctx.draw(t, at: CGPoint(x: positions[i].x * s, y: positions[i].y * s), anchor: .center)
             }
         }

@@ -27,6 +27,14 @@ enum SnapshotStore {
                                             best: "—", target: "—", score: 0, daysLeftLabel: "",
                                             points: 0, isBoss: false, updated: Date())
 
+    static let countdownSample: WidgetSnapshot = {
+        var s = placeholder
+        s.countdownTo = Date().addingTimeInterval(38 * 86_400)
+        s.januaryName = "5K run"
+        s.januaryReady = true
+        return s
+    }()
+
     static let sample = WidgetSnapshot(mood: "pumped", moodLabel: "PUMPED", title: "MAR · PULL-UPS",
                                        best: "15", target: "18", score: 50, daysLeftLabel: "17D LEFT",
                                        points: 201, isBoss: false, updated: Date())
@@ -43,12 +51,17 @@ struct Provider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<SnapshotEntry>) -> Void) {
-        let entry = SnapshotEntry(date: Date(), snapshot: SnapshotStore.load())
-        // The app reloads the timeline on every save; refresh after midnight for the day count.
+        let snap = SnapshotStore.load()
         var cal = Calendar.current
         cal.timeZone = TimeZone.current
-        let tomorrow = cal.startOfDay(for: Date().addingTimeInterval(86_400)).addingTimeInterval(60)
-        completion(Timeline(entries: [entry], policy: .after(tomorrow)))
+        let now = Date()
+        // One entry now and one just after each of the next 7 midnights, so day counts stay right.
+        var entries = [SnapshotEntry(date: now, snapshot: snap)]
+        for i in 1...7 {
+            let day = cal.startOfDay(for: now.addingTimeInterval(Double(i) * 86_400)).addingTimeInterval(30)
+            entries.append(SnapshotEntry(date: day, snapshot: snap))
+        }
+        completion(Timeline(entries: entries, policy: .atEnd))
     }
 }
 
@@ -174,9 +187,43 @@ struct ChallengeWidgetEntryView: View {
     }
 
     var body: some View {
+        if let start = entry.snapshot.countdownTo, entry.date < start {
+            countdown(start)
+        } else {
+            month
+        }
+    }
+
+    private func countdown(_ start: Date) -> some View {
+        let s = entry.snapshot
+        let days = max(0, Int((start.timeIntervalSince(entry.date) / 86_400).rounded(.up)))
+        let yellow = WPalette.plates[2]
+        let ready = s.januaryReady ?? false
+        return HStack(spacing: 16) {
+            VStack(spacing: 4) {
+                WidgetMascot(mood: "pumped").frame(width: 96, height: 96)
+                label(ready ? "READY" : "WARMING UP", ready ? WPalette.lime : yellow)
+            }
+            .frame(width: 104)
+            VStack(alignment: .leading, spacing: 6) {
+                label("2027 STARTS IN", WPalette.soft)
+                HStack(alignment: .lastTextBaseline, spacing: 0) {
+                    Text("\(days)").font(.custom("VT323-Regular", fixedSize: 52)).foregroundStyle(WPalette.lime)
+                    Text(days == 1 ? " DAY" : " DAYS").font(.custom("VT323-Regular", fixedSize: 24)).foregroundStyle(WPalette.dim)
+                }
+                .lineLimit(1)
+                label(s.januaryName.map { "JAN · \($0.uppercased())" } ?? "JAN · NOT CHOSEN",
+                      s.januaryName == nil || !ready ? yellow : WPalette.soft)
+                label(s.januaryName == nil ? "PICK BEFORE 1 JAN" : (ready ? "LOCKS 1 JAN 00:00" : "SET BASELINE + TARGET"), WPalette.muted)
+            }
+        }
+        .foregroundStyle(Color(red: 230 / 255, green: 237 / 255, blue: 243 / 255))
+    }
+
+    private var month: some View {
         let s = entry.snapshot
         let accent = s.isBoss ? WPalette.redText : WPalette.lime
-        HStack(spacing: 16) {
+        return HStack(spacing: 16) {
             VStack(spacing: 4) {
                 WidgetMascot(mood: s.mood).frame(width: 96, height: 96)
                 label(s.moodLabel, WPalette.mood(s.mood))
@@ -220,4 +267,5 @@ struct ChallengeWidget: Widget {
     ChallengeWidget()
 } timeline: {
     SnapshotEntry(date: .now, snapshot: SnapshotStore.sample)
+    SnapshotEntry(date: .now, snapshot: SnapshotStore.countdownSample)
 }

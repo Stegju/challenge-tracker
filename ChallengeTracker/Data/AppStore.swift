@@ -53,7 +53,12 @@ final class AppStore {
     }
     var calendar: Calendar { rules.calendar }
     var engine: YearEngine { YearEngine(state: state, catalogue: catalogue, rules: rules, now: now) }
-    var momentum: MomentumResult { MomentumEngine.compute(engine: engine) }
+    var momentumConfig: MomentumConfig {
+        var c = MomentumConfig.standard
+        c.expectedOtherPerWeek = Double(settings.otherWorkoutsPerWeek)
+        return c
+    }
+    var momentum: MomentumResult { MomentumEngine.compute(engine: engine, config: momentumConfig) }
 
     var currentMonth: Int? { rules.currentMonth(now: now) }
     var isBeforeYear: Bool { rules.isBeforeYear(now) }
@@ -147,6 +152,10 @@ final class AppStore {
 
     func finalize(month: Int) {
         mutate("Finalized \(month)") { s, e in try YearActions.finalize(&s, month: month, engine: e) }
+    }
+
+    func lockInSetup(month: Int) {
+        mutate("Locked in baseline and target \(month)") { s, e in try YearActions.lockInSetup(&s, month: month, engine: e) }
     }
 
     func addWorkout(_ w: Workout) {
@@ -254,7 +263,7 @@ final class AppStore {
 
     func writeWidgetSnapshot() {
         let e = YearEngine(state: real, catalogue: catalogue, rules: rules, now: Date())
-        let snap = WidgetSnapshotBuilder.make(engine: e)
+        let snap = WidgetSnapshotBuilder.make(engine: e, config: momentumConfig)
         Persistence.save(snap, to: Persistence.widgetURL)
         WidgetCenter.shared.reloadAllTimelines()
     }
@@ -297,8 +306,8 @@ final class AppStore {
 }
 
 enum WidgetSnapshotBuilder {
-    static func make(engine e: YearEngine) -> WidgetSnapshot {
-        let mom = MomentumEngine.compute(engine: e)
+    static func make(engine e: YearEngine, config: MomentumConfig) -> WidgetSnapshot {
+        let mom = MomentumEngine.compute(engine: e, config: config)
         let month = e.rules.currentMonth(now: e.now)
         let r = month.map { e.resolve($0) }
         let mood = MomentumEngine.displayMood(momentum: mom, currentMonth: r)
@@ -319,9 +328,16 @@ enum WidgetSnapshotBuilder {
         } else if e.rules.isBeforeYear(e.now) {
             daysLabel = "\(e.rules.daysUntilLock(1, now: e.now))D TO GO"
         }
-        return WidgetSnapshot(mood: mood.rawValue, moodLabel: mood.label, title: title, best: best, target: target,
-                              score: score, daysLeftLabel: daysLabel, points: e.yearTotal,
-                              isBoss: r?.isBoss ?? false, updated: Date())
+        var snap = WidgetSnapshot(mood: mood.rawValue, moodLabel: mood.label, title: title, best: best, target: target,
+                                  score: score, daysLeftLabel: daysLabel, points: e.yearTotal,
+                                  isBoss: r?.isBoss ?? false, updated: Date())
+        if e.rules.isBeforeYear(e.now) {
+            let jan = e.resolve(1)
+            snap.countdownTo = e.rules.yearStart
+            snap.januaryName = jan.challenge?.name
+            snap.januaryReady = jan.baseline != nil && jan.target != nil
+        }
+        return snap
     }
 
     /// "PULL-UPS" from "Max pull-ups"; uppercase name otherwise.

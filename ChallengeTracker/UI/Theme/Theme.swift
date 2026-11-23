@@ -299,3 +299,25 @@ struct PixelField: View {
             .tint(Palette.lime)
     }
 }
+
+/// Value input that only accepts well-formed values for its kind (time fills colons as you type).
+struct ValueField: View {
+    var kind: InputKind
+    @Binding var text: String
+    var placeholder: String?
+
+    var body: some View {
+        PixelField(placeholder: placeholder ?? kind.placeholder, text: $text, keyboard: keyboard)
+            .onChange(of: text) { _, new in
+                let f = InputFormat.format(new, kind: kind)
+                if f != new { text = f }
+            }
+    }
+
+    private var keyboard: UIKeyboardType {
+        switch kind {
+        case .time, .integer: return .numberPad
+        case .decimal: return .decimalPad
+        }
+    }
+}

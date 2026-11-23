@@ -15,6 +15,7 @@ struct ChallengeDetailView: View {
     @State private var repsText = ""
     @State private var entryDate = Date()
     @State private var finalizeStage = 0
+    @State private var lockInArmed = false
     @State private var didInit = false
 
     enum EditField { case baseline, target }
@@ -102,8 +103,8 @@ struct ChallengeDetailView: View {
     // MARK: Challenge card
 
     private func challengeCard(_ r: ResolvedSlot, _ ch: Challenge, rules: LockRules, now: Date) -> some View {
-        let canBaseline = r.kind != .redo && rules.canEditBaseline(month, now: now) && !r.isFinal
-        let canTarget = r.kind != .redo && rules.canEditTarget(month, now: now)
+        let canBaseline = r.setupOpen
+        let canTarget = r.setupOpen
         return VStack(alignment: .leading, spacing: 12) {
             Text(ch.name.uppercased()).font(.heading(18)).foregroundStyle(r.isBoss ? Palette.bossName : .white)
             HStack(alignment: .top, spacing: 8) {
@@ -125,6 +126,19 @@ struct ChallengeDetailView: View {
             Text(lockLine(r, rules: rules, now: now))
                 .font(.vt(18)).foregroundStyle(Palette.muted)
                 .fixedSize(horizontal: false, vertical: true)
+            if r.setupOpen && r.baseline != nil && r.target != nil {
+                Button(lockInArmed ? "TAP AGAIN · LOCKED FOR GOOD" : "LOCK IN BASELINE + TARGET") {
+                    if lockInArmed {
+                        store.lockInSetup(month: month)
+                        lockInArmed = false
+                        editing = nil
+                    } else {
+                        lockInArmed = true
+                    }
+                }
+                .buttonStyle(SecondaryButtonStyle(edge: lockInArmed ? Palette.plateYellow : Palette.lime,
+                                                  textColor: lockInArmed ? Palette.plateYellow : Palette.lime, height: 44))
+            }
             if !r.isLocked && store.engine.canPick(month) {
                 Button("CHANGE CHALLENGE") { router.push(.pick(month)) }
                     .buttonStyle(SecondaryButtonStyle(height: 44))
@@ -172,19 +186,19 @@ struct ChallengeDetailView: View {
     }
 
     private func editRow(_ field: EditField, _ ch: Challenge) -> some View {
-        HStack(alignment: .bottom, spacing: 6) {
+        let kind = InputFormat.kind(for: ch)
+        return HStack(alignment: .bottom, spacing: 6) {
             VStack(alignment: .leading, spacing: 4) {
                 Lbl("\(field == .baseline ? "BASELINE" : "TARGET") · \(ValueFormat.inputHint(ch))", size: 9)
-                PixelField(placeholder: ValueFormat.inputHint(ch), text: $editText,
-                           keyboard: ch.metric == .time ? .numbersAndPunctuation : .decimalPad)
+                ValueField(kind: kind, text: $editText)
             }
             Button("SAVE") {
                 let trimmed = editText.trimmingCharacters(in: .whitespaces)
-                let value: Double? = trimmed.isEmpty ? nil : ValueFormat.parse(trimmed, metric: ch.metric)
-                if !trimmed.isEmpty && value == nil {
-                    store.message = "Couldn't read that. Use \(ValueFormat.inputHint(ch))."
+                if let problem = InputFormat.problem(trimmed, kind: kind) {
+                    store.message = problem
                     return
                 }
+                let value: Double? = trimmed.isEmpty ? nil : ValueFormat.parse(trimmed, metric: ch.metric)
                 let ok = field == .baseline ? store.setBaseline(month: month, value: value)
                                             : store.setTarget(month: month, value: value)
                 if ok { editing = nil }
@@ -197,17 +211,22 @@ struct ChallengeDetailView: View {
     private func lockLine(_ r: ResolvedSlot, rules: LockRules, now: Date) -> String {
         let cal = store.calendar
         let lock = Fmt.dayMonth(rules.lockDate(month), cal)
-        let baseClose = Fmt.dayMonth(rules.addingDaysBeforeClose(month), cal)
+        let lastDay = Fmt.dayMonth(rules.setupLastDay(month), cal)
         if r.isRedo, let src = r.slot.sourceMonth {
             return "Redo of \(YearConfig.name(src).capitalized): same baseline and target. The better attempt counts."
         }
-        if !r.isLocked {
-            return "Locks \(lock) 00:00. Baseline can still be entered until \(baseClose)."
+        if r.setupOpen {
+            let lockPart = r.isLocked ? "Challenge locked \(lock)." : "Challenge locks \(lock) 00:00."
+            return lockPart + " Baseline and target can change until the end of \(lastDay), then they lock. Lock them in sooner if you're sure."
         }
-        if rules.canEditBaseline(month, now: now) {
-            return "Target locked \(lock). Baseline open until the end of \(baseClose)."
+        if let at = r.slot.setupLockedAt {
+            return "Baseline and target locked in on \(Fmt.dayMonth(at, cal))."
         }
-        return "Target locked \(lock). Baseline closed \(baseClose)." + (r.baseline == nil ? " No baseline was entered, so this month can't score." : "")
+        if r.isFinal {
+            return "Final. Nothing can change any more."
+        }
+        return "Baseline and target locked at the end of \(lastDay)."
+            + (r.baseline == nil || r.target == nil ? " One was missing, so this month scores 0." : "")
     }
 
     // MARK: Entries
@@ -280,17 +299,16 @@ struct ChallengeDetailView: View {
                 if ch.metric == .e1rm {
                     VStack(alignment: .leading, spacing: 4) {
                         Lbl("KG", size: 9)
-                        PixelField(placeholder: "0", text: $weightText)
+                        ValueField(kind: .decimal(maxDecimals: 2), text: $weightText)
                     }
                     VStack(alignment: .leading, spacing: 4) {
                         Lbl("REPS", size: 9)
-                        PixelField(placeholder: "0", text: $repsText, keyboard: .numberPad)
+                        ValueField(kind: .integer, text: $repsText)
                     }
                 } else {
                     VStack(alignment: .leading, spacing: 4) {
                         Lbl(ValueFormat.inputHint(ch), size: 9)
-                        PixelField(placeholder: ch.metric == .time ? "mm:ss" : "0", text: $entryText,
-                                   keyboard: ch.metric == .time ? .numbersAndPunctuation : .decimalPad)
+                        ValueField(kind: InputFormat.kind(for: ch), text: $entryText)
                     }
                 }
             }
@@ -308,10 +326,14 @@ struct ChallengeDetailView: View {
             reps = Int(repsText.trimmingCharacters(in: .whitespaces))
             if let w, let reps, reps > 0, w > 0 { value = ValueFormat.e1rm(weightKg: w, reps: reps) }
         } else {
+            if let problem = InputFormat.problem(entryText, kind: InputFormat.kind(for: ch)) {
+                store.message = problem
+                return
+            }
             value = ValueFormat.parse(entryText, metric: ch.metric)
         }
         guard let v = value else {
-            store.message = "Couldn't read that value."
+            store.message = "Enter a value first."
             return
         }
         let entry = Entry(month: month, date: entryDate, value: v, weightKg: w, reps: reps, source: .manual)
@@ -376,7 +398,7 @@ struct ChallengeDetailView: View {
     private var forfeitNote: some View {
         VStack(alignment: .leading, spacing: 6) {
             Lbl("FORFEIT", color: Palette.alertText)
-            Text("No challenge or no target was set at midnight on the 1st, so this month scores 0.")
+            Text("No challenge on the 1st, or no baseline and target by the end of day 7, so this month scores 0.")
                 .font(.vt(19)).foregroundStyle(Palette.soft)
         }
         .padding(16)
@@ -395,13 +417,6 @@ struct ChallengeDetailView: View {
         }
         .padding(16)
         .panel()
-    }
-}
-
-extension LockRules {
-    /// Last day the baseline can be entered (day `baselineGraceDays`).
-    func addingDaysBeforeClose(_ month: Int) -> Date {
-        calendar.addingDays(-1, to: baselineClose(month))
     }
 }
 

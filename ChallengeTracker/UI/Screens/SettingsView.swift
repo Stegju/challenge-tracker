@@ -23,8 +23,7 @@ struct SettingsView: View {
                 }
                 rules
                 notifications($store.settings.notifications)
-                health
-                widget
+                trainingWeek
                 testDate
                 backup
                 resetButton
@@ -60,9 +59,9 @@ struct SettingsView: View {
         section("RULES") {
             VStack(alignment: .leading, spacing: 3) {
                 ForEach(Array(["12 slots. Exactly 2 are redo months.",
-                               "Edit freely until midnight on the 1st, then it locks.",
-                               "Blank baseline? Days 1–3 to enter it.",
-                               "No name or target at lock scores 0.",
+                               "Change the challenge until midnight on the 1st, then it locks.",
+                               "Baseline and target: change them until day 7, or lock them in sooner.",
+                               "No challenge on the 1st, or no baseline and target by day 7, scores 0.",
                                "Score 0–120. Redo keeps the better attempt.",
                                "One plate per side per 100 points."].enumerated()), id: \.offset) { i, line in
                     HStack(alignment: .firstTextBaseline, spacing: 6) {
@@ -97,30 +96,29 @@ struct SettingsView: View {
         .frame(minHeight: 44)
     }
 
-    private var health: some View {
-        HStack(spacing: 10) {
-            VStack(alignment: .leading, spacing: 2) {
-                Lbl("HEALTHKIT · V1.1")
-                Text("Read-only: workouts, distance, heart rate. Needs one more Mac session to switch on.")
+    private var trainingWeek: some View {
+        section("NORMAL WEEK · MOMENTUM") {
+            HStack(spacing: 10) {
+                Text("Other workouts in a normal week (on top of the challenge sessions)")
                     .font(.vt(19)).fixedSize(horizontal: false, vertical: true)
+                Spacer()
+                stepButton("-") { store.settings.otherWorkoutsPerWeek = max(0, store.settings.otherWorkoutsPerWeek - 1) }
+                Text("\(store.settings.otherWorkoutsPerWeek)").font(.number(30)).foregroundStyle(Palette.lime).frame(minWidth: 28)
+                stepButton("+") { store.settings.otherWorkoutsPerWeek = min(14, store.settings.otherWorkoutsPerWeek + 1) }
             }
-            Spacer()
-            Text("SOON")
-                .font(.label(11))
-                .foregroundStyle(Palette.infoText.opacity(0.6))
-                .padding(.horizontal, 12)
-                .frame(height: 44)
-                .notched(fill: .clear, edge: Palette.info.opacity(0.6))
+            Text("A normal week keeps the mascot pumped. On fire needs a new best on top.")
+                .font(.vt(17)).foregroundStyle(Palette.muted)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.horizontal, 14).padding(.vertical, 12)
-        .panel()
     }
 
-    private var widget: some View {
-        section("WIDGET") {
-            Text("Long-press the Home Screen, tap +, find this app, pick the medium size.")
-                .font(.vt(19)).fixedSize(horizontal: false, vertical: true)
-        }
+    private func stepButton(_ t: String, action: @escaping () -> Void) -> some View {
+        Button(t, action: action)
+            .font(.heading(16))
+            .foregroundStyle(Palette.lime)
+            .frame(width: 44, height: 44)
+            .notched(fill: .clear, edge: Palette.edge2)
+            .buttonStyle(.plain)
     }
 
     private var testDate: some View {

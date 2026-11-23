@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-/// Background behind every screen: ceiling lights, perspective floor grid,
+/// Background behind every screen: perspective floor grid,
 /// plate trees, drifting chalk dust. Scanlines go on top via `ScanlineOverlay`.
 struct Atmosphere: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -10,16 +10,6 @@ struct Atmosphere: View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
                 Palette.background
-                // Ceiling lights
-                let spacing = geo.size.width / 390
-                ForEach(0..<3, id: \.self) { i in
-                    Rectangle()
-                        .fill(Color(hex: 0xD7ECFF))
-                        .frame(width: 92 * spacing, height: 3)
-                        .opacity(0.4)
-                        .shadow(color: Color(.sRGB, red: 140 / 255, green: 190 / 255, blue: 1, opacity: 0.3), radius: 12)
-                        .offset(x: (36 + CGFloat(i) * 113) * spacing, y: 0)
-                }
                 FloorGrid()
                     .frame(height: 300)
                     .frame(maxHeight: .infinity, alignment: .bottom)

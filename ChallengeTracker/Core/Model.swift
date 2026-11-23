@@ -95,6 +95,8 @@ struct Slot: Codable, Equatable, Identifiable, Sendable {
     var isFinal: Bool = false
     /// Extra exercise names that count for this month (toggled on the Exercises screen).
     var extraCountedExercises: [String] = []
+    /// Set when baseline and target were locked in by hand before the window closed.
+    var setupLockedAt: Date?
 
     var id: Int { month }
 
@@ -106,7 +108,7 @@ struct Slot: Codable, Equatable, Identifiable, Sendable {
 
     // Tolerant decoding so older backups keep loading when fields are added.
     enum CodingKeys: String, CodingKey {
-        case month, kind, challengeId, snapshot, sourceMonth, baseline, target, finalResult, isFinal, extraCountedExercises
+        case month, kind, challengeId, snapshot, sourceMonth, baseline, target, finalResult, isFinal, extraCountedExercises, setupLockedAt
     }
 
     init(from decoder: Decoder) throws {
@@ -121,6 +123,7 @@ struct Slot: Codable, Equatable, Identifiable, Sendable {
         finalResult = try c.decodeIfPresent(Double.self, forKey: .finalResult)
         isFinal = try c.decodeIfPresent(Bool.self, forKey: .isFinal) ?? false
         extraCountedExercises = try c.decodeIfPresent([String].self, forKey: .extraCountedExercises) ?? []
+        setupLockedAt = try c.decodeIfPresent(Date.self, forKey: .setupLockedAt)
     }
 }
 

@@ -6,12 +6,10 @@ import UIKit
 struct CountdownView: View {
     @Environment(AppStore.self) private var store
     @Environment(Router.self) private var router
-    @State private var showWorkout = false
 
     var body: some View {
         let engine = store.engine
         let jan = engine.resolve(1)
-        let dec = engine.resolve(12)
         let mood = store.displayMood
         ScrollView {
             VStack(spacing: 14) {
@@ -30,17 +28,12 @@ struct CountdownView: View {
                         Rectangle().fill(Color.black.opacity(0.4)).frame(width: 72, height: 6).offset(y: -4)
                     }
                     SpeechBubble(mood: .pumped, text: jan.isChosen
-                                 ? (jan.target == nil ? "Set January's target before midnight on the 31st." : "January is set. See you on the 1st.")
+                                 ? (jan.target == nil || jan.baseline == nil ? "Test your baseline in the first week, then set a target by 7 Jan." : "January is set. See you on the 1st.")
                                  : "Pick January before midnight on the 31st.")
                 }
                 .padding(.vertical, 4)
 
                 januaryCard(jan)
-
-                bossCard(dec)
-
-                Button("+ LOG WORKOUT") { showWorkout = true }
-                    .buttonStyle(SecondaryButtonStyle(height: 44))
 
                 testModeCard
             }
@@ -48,7 +41,6 @@ struct CountdownView: View {
             .padding(.bottom, 96)
         }
         .scrollIndicators(.hidden)
-        .sheet(isPresented: $showWorkout) { WorkoutSheet() }
     }
 
     private func januaryCard(_ jan: ResolvedSlot) -> some View {
@@ -68,8 +60,10 @@ struct CountdownView: View {
                         tile("BASELINE", jan.baseline.map { ValueFormat.format($0, metric: ch.metric) } ?? "—")
                         tile("TARGET", jan.target.map { ValueFormat.format($0, metric: ch.metric) } ?? "—")
                     }
-                    if jan.target == nil {
-                        Text("No target yet. Empty at lock scores 0.").font(.vt(18)).foregroundStyle(Palette.plateYellow)
+                    if jan.target == nil || jan.baseline == nil {
+                        Text("Baseline and target can wait until 7 Jan. Missing then scores 0.")
+                            .font(.vt(18)).foregroundStyle(Palette.plateYellow)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 } else {
                     Text("Nothing picked yet").font(.vt(22)).foregroundStyle(Palette.text)
@@ -94,21 +88,6 @@ struct CountdownView: View {
         .padding(.horizontal, 12).padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .notched(fill: Palette.input)
-    }
-
-    private func bossCard(_ dec: ResolvedSlot) -> some View {
-        HStack(spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
-                Lbl("DECEMBER · BOSS", color: Palette.alertText)
-                Text(dec.challenge?.name ?? "Murph").font(.vt(22)).foregroundStyle(Palette.bossName)
-            }
-            Spacer()
-            Lbl("BOSS", color: Palette.alertText)
-                .padding(.horizontal, 8).padding(.vertical, 5)
-                .innerBorder(Palette.alert)
-        }
-        .padding(.horizontal, 16).padding(.vertical, 12)
-        .notched(fill: Palette.alert.opacity(0.08), edge: Palette.alert)
     }
 
     private var testModeCard: some View {
