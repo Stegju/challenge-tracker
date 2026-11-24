@@ -32,6 +32,7 @@ enum Route: Hashable {
     case challenge(Int)
     case exercises
     case debug
+    case workout(UUID)
 }
 
 /// Navigation state per tab, shared through the environment.
@@ -149,6 +150,7 @@ struct RootView: View {
                     case .challenge(let m): ChallengeDetailView(month: m)
                     case .exercises: ExercisesView()
                     case .debug: DebugView()
+                    case .workout(let id): WorkoutDetailView(id: id)
                     }
                 }
         }

@@ -37,9 +37,10 @@ struct ImportView: View {
                     workoutCard(w, cal)
                     exercisesRow(w)
                     suggestion(w)
-                } else if draft.error == nil {
+                } else if draft.error == nil && store.state.workouts.allSatisfy({ $0.source == .manual }) {
                     emptyHint
                 }
+                recentImports
             }
             .padding(.horizontal, 16)
             .padding(.top, 18)
@@ -63,6 +64,54 @@ struct ImportView: View {
                 .innerBorder(Palette.inputEdge)
             Button("READ TEXT") { parse(draft.text) }
                 .buttonStyle(SecondaryButtonStyle(edge: Palette.lime, textColor: Palette.lime, height: 44))
+        }
+    }
+
+    // MARK: Recent imports
+
+    private var recentImports: some View {
+        let state = store.state
+        let cal = store.calendar
+        let recent = state.workouts.filter { $0.source != .manual }.sorted { $0.date > $1.date }.prefix(12)
+        return Group {
+            if !recent.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Lbl("RECENT IMPORTS")
+                        Spacer()
+                        Lbl("TAP TO CHECK", size: 9)
+                    }
+                    ForEach(Array(recent)) { w in
+                        Button {
+                            router.push(.workout(w.id))
+                        } label: {
+                            HStack(spacing: 10) {
+                                VStack(alignment: .leading, spacing: 3) {
+                                    HStack(spacing: 6) {
+                                        Lbl(w.source == .healthkit ? "HEALTH" : "MOTRA",
+                                            color: w.source == .healthkit ? Palette.infoText : Palette.lime, size: 9)
+                                        Lbl(Fmt.dayTime(w.date, cal), size: 9)
+                                    }
+                                    Text(w.title ?? "Workout").font(.vt(21)).foregroundStyle(.white).lineLimit(1)
+                                    Text(WorkoutDetailView.summary(w, state: state, catalogue: store.catalogue))
+                                        .font(.vt(17)).foregroundStyle(Palette.muted).lineLimit(1)
+                                }
+                                Spacer()
+                                if state.entries.contains(where: { $0.workoutId == w.id }) {
+                                    Lbl("ENTRY", color: Palette.onLime, size: 9)
+                                        .padding(.horizontal, 6).padding(.vertical, 4)
+                                        .background(Palette.lime)
+                                }
+                                PixelIcon(.chevron).frame(width: 12, height: 12).foregroundStyle(Palette.muted)
+                            }
+                            .padding(.horizontal, 12).padding(.vertical, 10)
+                            .panel()
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.top, 6)
+            }
         }
     }
 
@@ -281,5 +330,126 @@ struct ExercisesView: View {
         }
         .padding(.horizontal, 14).padding(.vertical, 12)
         .notched(fill: counts ? Palette.lime.opacity(0.07) : Palette.panel, edge: counts ? Palette.lime : Palette.panelEdge)
+    }
+}
+
+/// One imported workout: summary, the entry it produced, and every set.
+struct WorkoutDetailView: View {
+    var id: UUID
+    @Environment(AppStore.self) private var store
+    @Environment(\.dismiss) private var dismiss
+    @State private var deleteArmed = false
+
+    /// "6 exercises · 22 sets · entry 105 kg" / "Running · 8.2 km · 42 min"
+    static func summary(_ w: Workout, state: YearState, catalogue: Catalogue) -> String {
+        var parts: [String] = []
+        if let ex = w.exercises, !ex.isEmpty {
+            parts.append("\(ex.count) exercise\(ex.count == 1 ? "" : "s")")
+            parts.append("\(ex.reduce(0) { $0 + $1.sets.count }) sets")
+        } else {
+            if let n = w.notes { parts.append(n) }
+            if let m = w.durationMinutes { parts.append("\(Int(m.rounded())) min") }
+        }
+        if let e = state.entries.first(where: { $0.workoutId == w.id }),
+           let ch = state.slot(e.month).snapshot ?? state.slot(e.month).challengeId.flatMap({ catalogue.challenge(id: $0) }) {
+            parts.append("entry \(ValueFormat.formatWithUnit(e.value, ch))")
+        }
+        return parts.joined(separator: " · ")
+    }
+
+    var body: some View {
+        let state = store.state
+        let cal = store.calendar
+        let w = state.workouts.first { $0.id == id }
+        let entry = state.entries.first { $0.workoutId == id }
+        let ch = entry.flatMap { store.engine.resolve($0.month).challenge }
+        return ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 12) {
+                    BackButton { dismiss() }
+                    VStack(alignment: .leading, spacing: 4) {
+                        Lbl("\(w?.source == .healthkit ? "APPLE HEALTH" : "MOTRA") · \(w.map { Fmt.dayTime($0.date, cal) } ?? "")")
+                        Text((w?.title ?? "Workout").uppercased()).font(.heading(18)).foregroundStyle(.white).lineLimit(2)
+                    }
+                }
+                if let w {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(alignment: .top) {
+                            stat("KIND", w.kind == .challenge ? "Challenge session" : "Other workout")
+                            stat("TIME", w.durationMinutes.map { "\(Int($0.rounded())) min" } ?? "—")
+                        }
+                        if let n = w.notes { stat("DISTANCE", n) }
+                    }
+                    .padding(14)
+                    .panel()
+
+                    VStack(alignment: .leading, spacing: 6) {
+                        Lbl("ENTRY", color: entry == nil ? Palette.muted : Palette.lime)
+                        if let entry, let ch {
+                            Text("\(YearConfig.name(entry.month).capitalized) · \(ch.name): \(ValueFormat.formatWithUnit(entry.value, ch))"
+                                 + (entry.reps.map { r in " (\(r) × \(entry.weightKg.map { ValueFormat.formatNumber($0) + " kg" } ?? "BW"))" } ?? ""))
+                                .font(.vt(20)).foregroundStyle(Palette.lime)
+                                .fixedSize(horizontal: false, vertical: true)
+                        } else {
+                            Text("No entry. Nothing in this workout counts for that month's challenge.")
+                                .font(.vt(18)).foregroundStyle(Palette.muted)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+                    .padding(14)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .notched(fill: entry == nil ? Palette.panel : Palette.lime.opacity(0.08), edge: entry == nil ? Palette.panelEdge : Palette.lime)
+
+                    ForEach(Array((w.exercises ?? []).enumerated()), id: \.offset) { _, ex in
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(ex.name).font(.vt(22)).foregroundStyle(.white)
+                            if let b = MotraParser.best(ex) {
+                                Lbl(b.e1rm.map { "BEST E1RM \(ValueFormat.formatNumber($0)) KG · \(b.reps) × \(ValueFormat.formatNumber(b.weightKg ?? 0)) KG" }
+                                    ?? "BEST \(b.reps) REPS", size: 9)
+                            }
+                            ForEach(Array(ex.sets.enumerated()), id: \.offset) { _, s in
+                                let dim = s.setType != .normal
+                                HStack(spacing: 8) {
+                                    Text(s.index == 0 ? (s.setType == .warmup ? "W" : "D") : "\(s.index)").frame(width: 20, alignment: .leading)
+                                    Text("\(s.reps) × \(s.weightKg.map { "\(ValueFormat.formatNumber($0)) kg" } ?? "BW")")
+                                    Spacer()
+                                    if dim { Lbl(s.setType == .warmup ? "WARM-UP" : "DROP SET", size: 9) }
+                                }
+                                .font(.number(19))
+                                .foregroundStyle(dim ? Palette.veryDim : Palette.soft)
+                            }
+                        }
+                        .padding(.horizontal, 14).padding(.vertical, 12)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .panel()
+                    }
+
+                    Button(deleteArmed ? "TAP AGAIN TO DELETE" : "DELETE THIS IMPORT") {
+                        if deleteArmed {
+                            store.deleteWorkout(w.id)
+                            dismiss()
+                        } else {
+                            deleteArmed = true
+                        }
+                    }
+                    .buttonStyle(SecondaryButtonStyle(edge: Palette.alert, textColor: Palette.alertText, height: 44))
+                } else {
+                    Text("This workout was deleted.").font(.vt(19)).foregroundStyle(Palette.muted)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 18)
+            .padding(.bottom, 40)
+        }
+        .scrollIndicators(.hidden)
+        .screen()
+    }
+
+    private func stat(_ label: String, _ value: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Lbl(label)
+            Text(value).font(.vt(21))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

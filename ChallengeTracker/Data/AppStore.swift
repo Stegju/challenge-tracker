@@ -309,7 +309,13 @@ final class AppStore {
     }
 
     func deleteWorkout(_ id: UUID) {
-        mutate("Deleted workout") { s, _ in s.workouts.removeAll { $0.id == id } }
+        mutate("Deleted workout") { s, e in
+            if let hk = s.workouts.first(where: { $0.id == id })?.healthKitId, !s.ignoredHealthKitIds.contains(hk) {
+                s.ignoredHealthKitIds.append(hk)   // so the next Health sync doesn't add it back
+            }
+            s.workouts.removeAll { $0.id == id }
+            s.entries.removeAll { $0.workoutId == id && !e.resolve($0.month).isFinal }
+        }
     }
 
     func toggleCounted(exercise: String, month: Int) {
