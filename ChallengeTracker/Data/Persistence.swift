@@ -7,8 +7,13 @@ struct AppSettings: Codable, Equatable {
     var lastExport: Date?
     /// Other (non-challenge) workouts in a normal week, for momentum.
     var otherWorkoutsPerWeek = 4
+    /// Apple Health connected (permission asked); workouts sync on open and in the background.
+    var healthConnected = false
+    var lastHealthSync: Date?
 
-    enum CodingKeys: String, CodingKey { case notifications, testMode, testDate, lastExport, otherWorkoutsPerWeek }
+    enum CodingKeys: String, CodingKey {
+        case notifications, testMode, testDate, lastExport, otherWorkoutsPerWeek, healthConnected, lastHealthSync
+    }
 
     init() {}
 
@@ -19,6 +24,8 @@ struct AppSettings: Codable, Equatable {
         testDate = try c.decodeIfPresent(Date.self, forKey: .testDate) ?? DemoData.defaultTestDate
         lastExport = try c.decodeIfPresent(Date.self, forKey: .lastExport)
         otherWorkoutsPerWeek = try c.decodeIfPresent(Int.self, forKey: .otherWorkoutsPerWeek) ?? 4
+        healthConnected = try c.decodeIfPresent(Bool.self, forKey: .healthConnected) ?? false
+        lastHealthSync = try c.decodeIfPresent(Date.self, forKey: .lastHealthSync)
     }
 }
 
@@ -39,6 +46,15 @@ enum Persistence {
     static var settingsURL: URL { directory.appendingPathComponent("settings.json") }
     static var widgetURL: URL { directory.appendingPathComponent(WidgetSnapshot.fileName) }
     static var logURL: URL { directory.appendingPathComponent("log.txt") }
+    /// Shares from the MotraShare extension land here as .txt files.
+    static var inboxURL: URL { directory.appendingPathComponent("Inbox", isDirectory: true) }
+
+    /// Inbox files, oldest first.
+    static func inboxFiles() -> [URL] {
+        let fm = FileManager.default
+        let files = (try? fm.contentsOfDirectory(at: inboxURL, includingPropertiesForKeys: nil)) ?? []
+        return files.filter { $0.pathExtension == "txt" }.sorted { $0.lastPathComponent < $1.lastPathComponent }
+    }
 
     static let encoder: JSONEncoder = {
         let e = JSONEncoder()

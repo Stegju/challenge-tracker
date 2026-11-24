@@ -330,12 +330,45 @@ enum YearActions {
             state.workouts.removeAll { $0.id == old.id }
             state.entries.removeAll { $0.workoutId == old.id && !engine.resolve($0.month).isFinal }
         }
+        // The Watch records the same session: drop Health copies within 15 minutes for good.
+        if w.source != .healthkit {
+            let twins = state.workouts.filter { $0.source == .healthkit && abs($0.date.timeIntervalSince(w.date)) <= HealthImport.matchWindow }
+            for t in twins {
+                state.workouts.removeAll { $0.id == t.id }
+                state.entries.removeAll { $0.workoutId == t.id && !engine.resolve($0.month).isFinal }
+                if let hk = t.healthKitId, !state.ignoredHealthKitIds.contains(hk) { state.ignoredHealthKitIds.append(hk) }
+            }
+        }
         state.workouts.append(w)
         if var e = entry {
             e.workoutId = w.id
             let alreadyFinalCopy = state.entries.contains { $0.workoutId == w.id }
             if !alreadyFinalCopy { try addEntry(&state, e, engine: engine) }
         }
+    }
+
+    /// Saves a parsed Motra workout: one workout, plus one entry if an exercise counts for its month.
+    /// Returns the entry that was added, if any.
+    @discardableResult
+    static func importParsed(_ state: inout YearState, parsed: ParsedWorkout, fallbackDate: Date,
+                             engine: YearEngine) throws -> Entry? {
+        let date = parsed.date ?? fallbackDate
+        var month: Int? = nil
+        if let m = engine.rules.currentMonth(now: date) {
+            let r = engine.resolve(m)
+            if r.isLocked && r.challenge != nil && !r.isFinal && !r.isForfeit { month = m }
+        }
+        let counted = month.map { engine.countedExercises($0) } ?? []
+        let anyCounts = parsed.exercises.contains { MotraParser.counts($0.name, counted: counted) }
+        let workout = Workout(date: date, kind: anyCounts ? .challenge : .other, source: .motra, title: parsed.name,
+                              durationMinutes: parsed.durationMinutes, notes: nil, exercises: parsed.exercises)
+        var entry: Entry? = nil
+        if let m = month, let ch = engine.resolve(m).challenge,
+           let sug = MotraParser.suggestedValue(workout: parsed, challenge: ch, counted: counted) {
+            entry = Entry(month: m, date: date, value: sug.value, weightKg: sug.weightKg, reps: sug.reps, source: .motra)
+        }
+        try importWorkout(&state, workout: workout, entry: entry, engine: engine)
+        return entry
     }
 
     /// Chooses which exercises count this month, then refills the entries that came from

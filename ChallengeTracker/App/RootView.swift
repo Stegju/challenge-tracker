@@ -113,6 +113,14 @@ struct RootView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { store.refresh() }
         }
+        .onChange(of: store.unreadShare) { _, text in
+            guard let text else { return }
+            draft.text = text
+            draft.workout = nil
+            draft.error = "Got a share from Motra but couldn't read a workout in it. The text is below."
+            router.go(.importTab)
+            store.unreadShare = nil
+        }
         .task {
             store.refresh()
             while !Task.isCancelled {

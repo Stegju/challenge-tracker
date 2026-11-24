@@ -169,6 +169,8 @@ struct Workout: Codable, Equatable, Identifiable, Sendable {
     var durationMinutes: Double?
     var notes: String?
     var exercises: [ParsedExercise]?
+    /// Apple Health workout UUID, for workouts that came from HealthKit.
+    var healthKitId: String?
 }
 
 struct YearState: Codable, Equatable, Sendable {
@@ -177,6 +179,8 @@ struct YearState: Codable, Equatable, Sendable {
     var slots: [Slot]
     var entries: [Entry] = []
     var workouts: [Workout] = []
+    /// Health workouts that duplicated a Motra import and must not be added again.
+    var ignoredHealthKitIds: [String] = []
 
     /// Twelve empty slots with Murph (or any fixed-month challenge) pre-assigned.
     static func fresh(catalogue: Catalogue) -> YearState {
@@ -206,7 +210,7 @@ struct YearState: Codable, Equatable, Sendable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case schemaVersion, year, slots, entries, workouts
+        case schemaVersion, year, slots, entries, workouts, ignoredHealthKitIds
     }
 
     init(slots: [Slot]) {
@@ -220,6 +224,7 @@ struct YearState: Codable, Equatable, Sendable {
         slots = try c.decode([Slot].self, forKey: .slots)
         entries = try c.decodeIfPresent([Entry].self, forKey: .entries) ?? []
         workouts = try c.decodeIfPresent([Workout].self, forKey: .workouts) ?? []
+        ignoredHealthKitIds = try c.decodeIfPresent([String].self, forKey: .ignoredHealthKitIds) ?? []
     }
 }
 

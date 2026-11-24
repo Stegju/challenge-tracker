@@ -22,14 +22,14 @@ struct ImportView: View {
                 VStack(spacing: 6) {
                     Button("PASTE FROM CLIPBOARD") { paste() }
                         .buttonStyle(PrimaryButtonStyle())
-                    Text("In Motra: share the workout, copy the text, then paste it here.")
+                    Text("Easiest: in Motra tap Share and pick this app. It's added the moment you open the app.")
                         .font(.vt(18)).foregroundStyle(Palette.muted)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
                     Button(showEditor ? "HIDE TEXT" : "TYPE OR EDIT TEXT") { showEditor.toggle() }
                         .buttonStyle(SecondaryButtonStyle(height: 40))
                 }
-                if showEditor { editor }
+                if showEditor || (draft.error != nil && !draft.text.isEmpty) { editor }
                 if let err = draft.error {
                     Text(err).font(.vt(19)).foregroundStyle(Palette.alertText)
                 }
@@ -72,7 +72,7 @@ struct ImportView: View {
             Text("Paste a workout and the app reads the exercises and sets. If an exercise counts for this month's challenge, its best set becomes an entry automatically. Every import also logs a workout for the This week panel.")
                 .font(.vt(19)).foregroundStyle(Palette.soft)
                 .fixedSize(horizontal: false, vertical: true)
-            Text("HealthKit and sharing straight from Motra come next.")
+            Text("Apple Health workouts come in on their own once Health is connected in Setup.")
                 .font(.vt(17)).foregroundStyle(Palette.infoText)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -185,21 +185,11 @@ struct ImportView: View {
     }
 
     private func save(_ w: ParsedWorkout, month: Int?, entryValue: (value: Double, weightKg: Double?, reps: Int?)?) {
-        let date = w.date ?? store.now
-        let counted = month.map { store.countedExercises(month: $0) } ?? []
-        let anyCounts = w.exercises.contains { MotraParser.counts($0.name, counted: counted) }
-        let workout = Workout(date: date, kind: anyCounts ? .challenge : .other, source: .motra, title: w.name,
-                              durationMinutes: w.durationMinutes, notes: nil, exercises: w.exercises)
-        var entry: Entry? = nil
-        if let m = month, let v = entryValue {
-            entry = Entry(month: m, date: date, value: v.value, weightKg: v.weightKg, reps: v.reps, source: .motra)
+        if store.importParsed(w) {
+            draft.workout = nil
+            draft.text = ""
+            draft.error = nil
         }
-        if store.importWorkout(workout, entry: entry) {
-            store.message = entry == nil ? "Workout saved." : "Workout and entry saved."
-        }
-        draft.workout = nil
-        draft.text = ""
-        draft.error = nil
     }
 }
 

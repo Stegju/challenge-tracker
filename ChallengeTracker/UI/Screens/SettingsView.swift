@@ -23,6 +23,7 @@ struct SettingsView: View {
                 }
                 rules
                 notifications($store.settings.notifications)
+                health
                 trainingWeek
                 testDate
                 backup
@@ -94,6 +95,29 @@ struct SettingsView: View {
             PixelSwitch(isOn: on, label: label)
         }
         .frame(minHeight: 44)
+    }
+
+    private var health: some View {
+        section("APPLE HEALTH · READ ONLY", color: Palette.infoText) {
+            Text("Watch workouts count toward momentum. Runs, rides and rows fill in entries for distance and timed challenges (5K, 2K, long run, long ride). Nothing is finalized for you.")
+                .font(.vt(18)).foregroundStyle(Palette.soft)
+                .fixedSize(horizontal: false, vertical: true)
+            if store.settings.healthConnected {
+                HStack(spacing: 8) {
+                    Lbl("CONNECTED", color: Palette.lime)
+                    Spacer()
+                    Lbl(store.settings.lastHealthSync.map { "SYNCED \(Fmt.dayLabel($0, store.calendar))" } ?? "NOT SYNCED YET")
+                }
+                Button("SYNC NOW") { Task { await store.syncHealth(); store.message = "Health synced." } }
+                    .buttonStyle(SecondaryButtonStyle(edge: Palette.info, textColor: Palette.infoText, height: 44))
+                Text("To change access: Settings app › Health › Data Access & Devices › 2027 Challenge.")
+                    .font(.vt(16)).foregroundStyle(Palette.dim)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Button("CONNECT APPLE HEALTH") { Task { await store.connectHealth() } }
+                    .buttonStyle(PrimaryButtonStyle(fill: Palette.info, textColor: .white, height: 44))
+            }
+        }
     }
 
     private var trainingWeek: some View {

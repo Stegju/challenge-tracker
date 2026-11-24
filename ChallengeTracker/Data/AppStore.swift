@@ -26,6 +26,9 @@ final class AppStore {
     var tick = Date()
     /// Last rule violation, shown as a toast.
     var message: String?
+    /// A share that couldn't be read; RootView opens it on the Import tab.
+    var unreadShare: String?
+    private var healthSyncRunning = false
 
     init() {
         let cat = Catalogue.bundled()
@@ -151,6 +154,90 @@ final class AppStore {
         mutate("Imported \(w.title ?? "workout")") { s, e in
             try YearActions.importWorkout(&s, workout: w, entry: entry, engine: e)
         }
+    }
+
+    /// Saves a parsed Motra workout (plus its entry, if an exercise counts) into the visible year.
+    @discardableResult
+    func importParsed(_ parsed: ParsedWorkout) -> Bool {
+        var entry: Entry? = nil
+        let ok = mutate("Imported \(parsed.name)") { s, e in
+            entry = try YearActions.importParsed(&s, parsed: parsed, fallbackDate: e.now, engine: e)
+        }
+        if ok { message = entry != nil ? "Workout and entry saved." : "Workout saved." }
+        return ok
+    }
+
+    /// Applies a change to the real year (shares and Health always belong to real life).
+    private func applyToReal(_ what: String, _ change: (inout YearState, YearEngine) throws -> Void) {
+        var s = real
+        let e = YearEngine(state: real, catalogue: catalogue, rules: rules, now: Date())
+        do {
+            try change(&s, e)
+        } catch {
+            AppLog.add("\(what) failed: \(error)")
+            return
+        }
+        guard s != real else { return }
+        real = s
+        Persistence.save(s, to: Persistence.yearURL)
+        afterRealChange()
+        AppLog.add(what)
+    }
+
+    /// Reads workouts shared from Motra (MotraShare extension) and imports them.
+    func processInbox() {
+        for url in Persistence.inboxFiles() {
+            let text = (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+            try? FileManager.default.removeItem(at: url)
+            AppLog.add("Share received (\(text.count) chars): \(text.prefix(120))")
+            if let p = MotraParser.parse(text, calendar: calendar), !p.exercises.isEmpty || p.durationMinutes != nil {
+                var entry: Entry? = nil
+                applyToReal("Imported shared \(p.name)") { s, e in
+                    entry = try YearActions.importParsed(&s, parsed: p, fallbackDate: Date(), engine: e)
+                }
+                message = entry != nil ? "\(p.name) imported from Motra, entry added." : "\(p.name) imported from Motra."
+            } else if !text.isEmpty {
+                unreadShare = text
+            }
+        }
+    }
+
+    // MARK: Apple Health
+
+    func connectHealth() async {
+        let ok = await HealthSync.shared.requestAuthorization()
+        if ok {
+            settings.healthConnected = true
+            startHealthObserver()
+            await syncHealth()
+            message = "Apple Health connected."
+        } else {
+            message = "Couldn't connect to Apple Health."
+        }
+    }
+
+    func startHealthObserver() {
+        guard settings.healthConnected else { return }
+        HealthSync.shared.startObserving { [weak self] in
+            await self?.syncHealth()
+        }
+    }
+
+    /// Pulls new Health workouts into the real year.
+    func syncHealth() async {
+        guard settings.healthConnected, !healthSyncRunning else { return }
+        healthSyncRunning = true
+        defer { healthSyncRunning = false }
+        // From December (momentum warm-up) or the last 30 days, whichever is earlier.
+        let december = calendar.date(year: YearConfig.year - 1, month: 12, day: 1)
+        let since = min(december, calendar.addingDays(-30, to: Date()))
+        let hw = await HealthSync.shared.fetchWorkouts(since: since)
+        var added = 0
+        applyToReal("Health sync") { s, e in
+            added = HealthImport.merge(&s, workouts: hw, catalogue: e.catalogue, rules: e.rules, now: e.now)
+        }
+        settings.lastHealthSync = Date()
+        if added > 0 { AppLog.add("Health: \(added) new workout\(added == 1 ? "" : "s")") }
     }
 
     func deleteEntry(_ id: UUID) {
@@ -305,6 +392,11 @@ final class AppStore {
     /// Called when the app becomes active.
     func refresh() {
         tick = Date()
+        processInbox()
+        if settings.healthConnected {
+            startHealthObserver()
+            Task { await syncHealth() }
+        }
         var s = real
         YearActions.refreshSnapshots(&s, catalogue: catalogue, rules: rules, now: Date())
         if s != real {
