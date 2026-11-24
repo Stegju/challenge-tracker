@@ -359,7 +359,10 @@ enum YearActions {
             if r.isLocked && r.challenge != nil && !r.isFinal && !r.isForfeit { month = m }
         }
         let counted = month.map { engine.countedExercises($0) } ?? []
+        // Motra sessions are strength training: they count if an exercise counts, or if the
+        // month's challenge takes strength sessions (Murph).
         let anyCounts = parsed.exercises.contains { MotraParser.counts($0.name, counted: counted) }
+            || (month.map { HealthImport.isSession(activity: "strength training", challenge: engine.resolve($0).challenge, counted: []) } ?? false)
         let workout = Workout(date: date, kind: anyCounts ? .challenge : .other, source: .motra, title: parsed.name,
                               durationMinutes: parsed.durationMinutes, notes: nil, exercises: parsed.exercises)
         var entry: Entry? = nil

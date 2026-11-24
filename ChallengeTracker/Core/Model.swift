@@ -34,6 +34,9 @@ struct Challenge: Codable, Equatable, Identifiable, Sendable {
     var countedExercises: [String]
     var fixedMonth: Int?
     var notes: String?
+    /// Workout activities (Health names, e.g. "running") that count as sessions; "*" = all.
+    var sessionActivities: [String]?
+    var sessionActivitiesExcluded: [String]?
 }
 
 struct Catalogue: Codable, Equatable, Sendable {

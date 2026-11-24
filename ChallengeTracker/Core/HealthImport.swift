@@ -8,6 +8,10 @@ struct HealthWorkout: Equatable, Sendable {
     /// Normalized activity: "running", "cycling", "rowing", "walking", "strength training", ...
     var activity: String
     var distanceKm: Double?
+    /// Treadmill, indoor cycle, etc. (Health's indoor workout flag).
+    var indoor: Bool = false
+    /// Fastest stretch in seconds per distance in km, e.g. [5: 1290] (from the workout's distance samples).
+    var fastestStretches: [Double: Double] = [:]
 
     var title: String { activity.prefix(1).uppercased() + activity.dropFirst() }
 }
@@ -24,22 +28,55 @@ enum HealthImport {
         return ValueFormat.parseNumber(String(num))
     }
 
+    /// Does a workout of this activity count as a session for the challenge?
+    /// The month's counted exercises always count; `sessionActivities` widens it ("*" = all).
+    static func isSession(activity: String, challenge ch: Challenge?, counted: [String]) -> Bool {
+        if MotraParser.counts(activity, counted: counted) { return true }
+        guard let ch, let list = ch.sessionActivities else { return false }
+        if MotraParser.counts(activity, counted: ch.sessionActivitiesExcluded ?? []) { return false }
+        return list.contains("*") || MotraParser.counts(activity, counted: list)
+    }
+
     /// Entry value a Health workout gives a challenge, or nil.
-    /// - distance challenges (km): the workout's distance
-    /// - timed distance challenges (5K, 2K): time scaled to the distance, if the workout was 99 to 110 % of it
+    /// - distance challenges (km): the distance of an outdoor workout
+    /// - timed distance challenges (5K, 2K): the fastest stretch of that distance inside the workout,
+    ///   else the whole workout's time scaled, if it was 99 to 110 % of the distance
     static func entryValue(_ hw: HealthWorkout, challenge ch: Challenge, counted: [String]) -> Double? {
         guard MotraParser.counts(hw.activity, counted: counted) else { return nil }
         switch ch.metric {
         case .number where ch.unit.lowercased() == "km":
-            guard let d = hw.distanceKm, d > 0 else { return nil }
+            guard !hw.indoor, let d = hw.distanceKm, d > 0 else { return nil }
             return (d * 100).rounded() / 100
         case .time:
-            guard let target = targetDistanceKm(ch), let d = hw.distanceKm, d >= target * 0.99, d <= target * 1.10,
-                  hw.durationSeconds > 0 else { return nil }
+            guard let target = targetDistanceKm(ch) else { return nil }
+            if let fastest = hw.fastestStretches[target] { return fastest.rounded() }
+            guard let d = hw.distanceKm, d >= target * 0.99, d <= target * 1.10, hw.durationSeconds > 0 else { return nil }
             return (hw.durationSeconds * target / d).rounded()
         default:
             return nil
         }
+    }
+
+    /// Fastest time to cover `meters` inside a workout, from cumulative (time, distance) points.
+    /// Each window is the shortest run of samples covering the distance, time scaled to it exactly.
+    static func fastestStretch(_ points: [(t: Double, d: Double)], meters: Double) -> Double? {
+        guard meters > 0, let last = points.last, let first = points.first, last.d - first.d >= meters * 0.999 else { return nil }
+        var best: Double? = nil
+        var i = 0
+        for j in points.indices {
+            while i + 1 < j && points[j].d - points[i + 1].d >= meters { i += 1 }
+            let dd = points[j].d - points[i].d
+            guard dd >= meters * 0.999, dd > 0 else { continue }
+            let t = (points[j].t - points[i].t) * meters / dd
+            if t > 0 { best = min(best ?? t, t) }
+        }
+        return best
+    }
+
+    /// Distances (km) worth computing a fastest stretch for in runs: timed running challenges ("5K run" → 5).
+    static func stretchDistances(_ catalogue: Catalogue, activity: String = "running") -> [Double] {
+        let timed = catalogue.challenges.filter { $0.metric == .time && MotraParser.counts(activity, counted: $0.countedExercises) }
+        return Array(Set(timed.compactMap { targetDistanceKm($0) })).sorted()
     }
 
     /// Adds Health workouts that aren't in the state yet. Skips ones that duplicate a Motra
@@ -63,7 +100,7 @@ enum HealthImport {
             if let m = rules.currentMonth(now: hw.start) {
                 let r = e.resolve(m)
                 let counted = e.countedExercises(m)
-                counts = MotraParser.counts(hw.activity, counted: counted)
+                counts = isSession(activity: hw.activity, challenge: r.challenge, counted: counted)
                 if r.isLocked, !r.isFinal, !r.isForfeit, let ch = r.challenge {
                     value = entryValue(hw, challenge: ch, counted: counted)
                     month = m

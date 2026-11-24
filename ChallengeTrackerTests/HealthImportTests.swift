@@ -74,3 +74,69 @@ struct HealthImportTests {
         #expect(HealthImport.merge(&s, workouts: [watch], catalogue: T.catalogue, rules: LockRules(), now: T.d(3, 6)) == 0)
     }
 }
+
+@MainActor
+struct HealthRulesTests {
+    func hw(_ activity: String, km: Double? = nil, indoor: Bool = false, minutes: Double = 60) -> HealthWorkout {
+        HealthWorkout(id: UUID().uuidString, start: T.d(3, 5, 7), durationSeconds: minutes * 60,
+                      activity: activity, distanceKm: km, indoor: indoor)
+    }
+
+    @Test func longRunAndRideAreOutdoorOnly() throws {
+        let run = try #require(T.catalogue.challenge(id: "run-long"))
+        #expect(HealthImport.entryValue(hw("running", km: 12, indoor: true), challenge: run, counted: run.countedExercises) == nil)
+        #expect(HealthImport.entryValue(hw("running", km: 12), challenge: run, counted: run.countedExercises) == 12)
+        let bike = try #require(T.catalogue.challenge(id: "bike-long"))
+        #expect(HealthImport.entryValue(hw("cycling", km: 40, indoor: true), challenge: bike, counted: bike.countedExercises) == nil)
+    }
+
+    @Test func fastestStretchFindsTheQuickPart() {
+        // 10 km: first 5 km at 5:00/km, last 5 km at 4:00/km, a point every 100 m.
+        var pts: [(t: Double, d: Double)] = [(0, 0)]
+        var t = 0.0
+        for i in 1...100 {
+            t += i <= 50 ? 30 : 24
+            pts.append((t, Double(i) * 100))
+        }
+        let best = HealthImport.fastestStretch(pts, meters: 5000)
+        #expect(best == 1200)
+        #expect(HealthImport.fastestStretch(Array(pts.prefix(20)), meters: 5000) == nil)
+    }
+
+    @Test func fiveKUsesFastestStretchOfALongerRun() throws {
+        let ch = try #require(T.catalogue.challenge(id: "run-5k"))
+        var long = hw("running", km: 10, minutes: 45)
+        long.fastestStretches = [5: 1250]
+        #expect(HealthImport.entryValue(long, challenge: ch, counted: ch.countedExercises) == 1250)
+        #expect(HealthImport.stretchDistances(T.catalogue) == [5])
+    }
+
+    @Test func hyroxSessionsAreEverythingButStrengthAndBoxing() throws {
+        let ch = try #require(T.catalogue.challenge(id: "hyrox-race"))
+        #expect(HealthImport.isSession(activity: "running", challenge: ch, counted: ch.countedExercises))
+        #expect(HealthImport.isSession(activity: "rowing", challenge: ch, counted: ch.countedExercises))
+        #expect(HealthImport.isSession(activity: "functional strength training", challenge: ch, counted: ch.countedExercises))
+        #expect(!HealthImport.isSession(activity: "strength training", challenge: ch, counted: ch.countedExercises))
+        #expect(!HealthImport.isSession(activity: "boxing", challenge: ch, counted: ch.countedExercises))
+        // No automatic entry: the race time is typed in.
+        #expect(HealthImport.entryValue(hw("running", km: 8), challenge: ch, counted: ch.countedExercises) == nil)
+    }
+
+    @Test func murphSessionsAreRunsStrengthAndHiit() throws {
+        let ch = try #require(T.catalogue.challenge(id: "murph"))
+        #expect(HealthImport.isSession(activity: "running", challenge: ch, counted: ch.countedExercises))
+        #expect(HealthImport.isSession(activity: "strength training", challenge: ch, counted: ch.countedExercises))
+        #expect(HealthImport.isSession(activity: "hiit", challenge: ch, counted: ch.countedExercises))
+        #expect(!HealthImport.isSession(activity: "cycling", challenge: ch, counted: ch.countedExercises))
+    }
+
+    @Test func hyroxMonthMergeMarksSessions() {
+        var s = T.fresh()
+        T.put(&s, 3, "hyrox-race", b: 5400, t: 5100)
+        let list = [hw("running", km: 8), hw("strength training")]
+        HealthImport.merge(&s, workouts: list, catalogue: T.catalogue, rules: LockRules(), now: T.d(3, 10))
+        #expect(s.workouts.first { $0.title == "Running" }?.kind == .challenge)
+        #expect(s.workouts.first { $0.title == "Strength training" }?.kind == .other)
+        #expect(s.entries.isEmpty)
+    }
+}

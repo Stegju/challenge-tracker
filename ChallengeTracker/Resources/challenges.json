@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "note": "Julian's final 2027 list: 10 challenges + 2 redo months = 12 slots. weeklyDose values are placeholders (3 sessions) until Julian sets them. metric: 'time' entered as h:mm:ss or mm:ss and stored in seconds; 'e1rm' entered as weight + reps and stored as kg via e1RM = w(1 + r/30); 'number' stored as typed.",
+  "version": 3,
+  "note": "Julian's final 2027 list: 10 challenges + 2 redo months = 12 slots. weeklyDose values are placeholders (3 sessions) until Julian sets them. metric: 'time' entered as h:mm:ss or mm:ss and stored in seconds; 'e1rm' entered as weight + reps and stored as kg via e1RM = w(1 + r/30); 'number' stored as typed. sessionActivities: Health activity names that count as challenge sessions ('*' = all), minus sessionActivitiesExcluded.",
   "challenges": [
     {
       "id": "hyrox-race",
@@ -14,7 +14,15 @@
         "amount": 3
       },
       "countedExercises": [],
-      "notes": "Event: result is the official race time. Pick the month of a race you are entered in."
+      "notes": "Event: result is the official race time, typed in by hand. Every Health workout except strength training and boxing counts as a HYROX session.",
+      "sessionActivities": [
+        "*"
+      ],
+      "sessionActivitiesExcluded": [
+        "strength training",
+        "boxing",
+        "kickboxing"
+      ]
     },
     {
       "id": "pushups-max",
@@ -75,7 +83,7 @@
         "amount": 3
       },
       "countedExercises": [],
-      "notes": "Estimated body fat. Same method and time of day for every measurement."
+      "notes": "Estimated body fat by eye, typed in by hand."
     },
     {
       "id": "run-5k",
@@ -90,7 +98,8 @@
       },
       "countedExercises": [
         "running"
-      ]
+      ],
+      "notes": "Fastest 5 km stretch of any run that month (from Apple Health), or type a time."
     },
     {
       "id": "bike-long",
@@ -106,7 +115,7 @@
       "countedExercises": [
         "cycling"
       ],
-      "notes": "Single ride, as far as possible."
+      "notes": "Longest single outdoor ride (from Apple Health)."
     },
     {
       "id": "run-long",
@@ -122,7 +131,7 @@
       "countedExercises": [
         "running"
       ],
-      "notes": "Single run, as far as possible."
+      "notes": "Longest single outdoor run (from Apple Health)."
     },
     {
       "id": "pullups-max",
@@ -153,7 +162,13 @@
       },
       "countedExercises": [],
       "fixedMonth": 12,
-      "notes": "Boss challenge. Fixed to December. Rx standard (vest or not) to be decided before locking."
+      "notes": "Boss challenge. Fixed to December. Result typed in by hand. Runs, strength and HIIT sessions count toward it. Rx standard (vest or not) to be decided before locking.",
+      "sessionActivities": [
+        "running",
+        "strength training",
+        "functional strength training",
+        "hiit"
+      ]
     }
   ]
 }

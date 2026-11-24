@@ -184,22 +184,70 @@ final class AppStore {
         AppLog.add(what)
     }
 
-    /// Reads workouts shared from Motra (MotraShare extension) and imports them.
-    func processInbox() {
+    private var inboxRunning = false
+
+    /// Reads workouts shared from Motra (MotraShare extension) and imports them. Tries the
+    /// shared text, then text recognized in shared images, then the shared Motra web page.
+    func processInbox() async {
+        guard !inboxRunning else { return }
+        inboxRunning = true
+        defer { inboxRunning = false }
+        let fm = FileManager.default
         for url in Persistence.inboxFiles() {
-            let text = (try? String(contentsOf: url, encoding: .utf8)) ?? ""
-            try? FileManager.default.removeItem(at: url)
-            AppLog.add("Share received (\(text.count) chars): \(text.prefix(120))")
-            if let p = MotraParser.parse(text, calendar: calendar), !p.exercises.isEmpty || p.durationMinutes != nil {
+            let stem = url.deletingPathExtension().lastPathComponent
+            let raw = (try? String(contentsOf: url, encoding: .utf8)) ?? ""
+            try? fm.removeItem(at: url)
+            let lines = raw.components(separatedBy: "\n")
+            let header = lines.first(where: { $0.hasPrefix("#motrashare") }) ?? ""
+            let body = lines.filter { !$0.hasPrefix("#motrashare") }.joined(separator: "\n")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            AppLog.add("Share received. \(header) text: \(body.prefix(160))")
+
+            var candidates: [(String, String)] = [("text", body)]
+            let images = ((try? fm.contentsOfDirectory(at: Persistence.inboxURL, includingPropertiesForKeys: nil)) ?? [])
+                .filter { $0.lastPathComponent.hasPrefix(stem + "-") }
+                .sorted { $0.lastPathComponent < $1.lastPathComponent }
+            var ocr: [String] = []
+            for img in images {
+                if let d = try? Data(contentsOf: img) { ocr.append(await ShareReader.recognizeText(in: d)) }
+                try? fm.removeItem(at: img)
+            }
+            if !ocr.isEmpty {
+                let joined = ocr.joined(separator: "\n")
+                AppLog.add("Share image text: \(joined.prefix(300))")
+                candidates.append(("image", joined))
+            }
+
+            var parsed: ParsedWorkout? = nil
+            var how = ""
+            for (label, text) in candidates {
+                if let p = Self.readWorkout(text, calendar: calendar) { parsed = p; how = label; break }
+            }
+            var page = ""
+            if parsed == nil, let link = ShareReader.motraLink(in: body), let t = await ShareReader.pageText(link) {
+                page = t
+                AppLog.add("Share page text: \(t.prefix(300))")
+                if let p = Self.readWorkout(t, calendar: calendar) { parsed = p; how = "page" }
+            }
+
+            if let p = parsed {
                 var entry: Entry? = nil
-                applyToReal("Imported shared \(p.name)") { s, e in
+                applyToReal("Imported shared \(p.name) (from \(how))") { s, e in
                     entry = try YearActions.importParsed(&s, parsed: p, fallbackDate: Date(), engine: e)
                 }
                 message = entry != nil ? "\(p.name) imported from Motra, entry added." : "\(p.name) imported from Motra."
-            } else if !text.isEmpty {
-                unreadShare = text
+            } else {
+                var shown = [header, body]
+                if !ocr.isEmpty { shown.append("— text in image —\n" + ocr.joined(separator: "\n")) }
+                if !page.isEmpty { shown.append("— web page —\n" + String(page.prefix(1500))) }
+                unreadShare = shown.filter { !$0.isEmpty }.joined(separator: "\n\n")
             }
         }
+    }
+
+    private static func readWorkout(_ text: String, calendar: Calendar) -> ParsedWorkout? {
+        guard let p = MotraParser.parse(text, calendar: calendar), !p.exercises.isEmpty else { return nil }
+        return p
     }
 
     // MARK: Apple Health
@@ -231,7 +279,11 @@ final class AppStore {
         // From December (momentum warm-up) or the last 30 days, whichever is earlier.
         let december = calendar.date(year: YearConfig.year - 1, month: 12, day: 1)
         let since = min(december, calendar.addingDays(-30, to: Date()))
-        let hw = await HealthSync.shared.fetchWorkouts(since: since)
+        // Ask again quietly: the sheet only appears for newly requested data types.
+        _ = await HealthSync.shared.requestAuthorization()
+        let known = Set(real.workouts.compactMap(\.healthKitId) + real.ignoredHealthKitIds)
+        let hw = await HealthSync.shared.fetchWorkouts(since: since, known: known,
+                                                       stretchKm: HealthImport.stretchDistances(catalogue))
         var added = 0
         applyToReal("Health sync") { s, e in
             added = HealthImport.merge(&s, workouts: hw, catalogue: e.catalogue, rules: e.rules, now: e.now)
@@ -392,7 +444,7 @@ final class AppStore {
     /// Called when the app becomes active.
     func refresh() {
         tick = Date()
-        processInbox()
+        Task { await processInbox() }
         if settings.healthConnected {
             startHealthObserver()
             Task { await syncHealth() }

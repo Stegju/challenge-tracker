@@ -40,26 +40,46 @@ final class ShareViewController: UIViewController {
 
     private func handleShare() async {
         var parts: [String] = []
+        var types: [String] = []
+        var images: [Data] = []
         let items = (extensionContext?.inputItems as? [NSExtensionItem]) ?? []
         for item in items {
             if let t = item.attributedContentText?.string, !t.isEmpty { parts.append(t) }
             for provider in item.attachments ?? [] {
-                if provider.hasItemConformingToTypeIdentifier(UTType.plainText.identifier) {
-                    if let s = await loadString(provider, type: UTType.plainText.identifier) { parts.append(s) }
-                } else if provider.hasItemConformingToTypeIdentifier(UTType.url.identifier) {
-                    if let s = await loadString(provider, type: UTType.url.identifier) { parts.append(s) }
+                types.append(provider.registeredTypeIdentifiers.joined(separator: ","))
+                for type in provider.registeredTypeIdentifiers {
+                    guard let ut = UTType(type) else { continue }
+                    if ut.conforms(to: .image) {
+                        if let d = await loadImageData(provider, type: type) { images.append(d) }
+                        break
+                    }
+                    if ut.conforms(to: .text) || ut.conforms(to: .url) {
+                        if let s = await loadString(provider, type: type) { parts.append(s) }
+                        break
+                    }
                 }
             }
         }
         // Drop exact repeats (Motra may send the text both as content and as an attachment).
         var seen = Set<String>()
         let unique = parts.filter { seen.insert($0.trimmingCharacters(in: .whitespacesAndNewlines)).inserted }
-        let text = unique.joined(separator: "\n\n")
+        // First line records what Motra sent, for the debug log.
+        let header = "#motrashare types=\(types.joined(separator: " | ")) images=\(images.count)"
+        let text = ([header] + unique).joined(separator: "\n\n")
 
-        let saved = !text.isEmpty && save(text)
-        bodyLabel.text = saved ? "Saved. Open 2027 Challenge and it's added automatically." : "Nothing to import in that share."
+        let saved = save(text, images: images)
+        bodyLabel.text = saved ? "Saved. Open 2027 Challenge and it's added automatically." : "Couldn't save that share."
         try? await Task.sleep(nanoseconds: 1_400_000_000)
         extensionContext?.completeRequest(returningItems: nil, completionHandler: nil)
+    }
+
+    private func loadImageData(_ provider: NSItemProvider, type: String) async -> Data? {
+        guard let item = try? await provider.loadItem(forTypeIdentifier: type, options: nil) else { return nil }
+        var image: UIImage? = nil
+        if let d = item as? Data { image = UIImage(data: d) }
+        if let u = item as? URL, let d = try? Data(contentsOf: u) { image = UIImage(data: d) }
+        if let i = item as? UIImage { image = i }
+        return image?.jpegData(compressionQuality: 0.9)
     }
 
     private func loadString(_ provider: NSItemProvider, type: String) async -> String? {
@@ -71,13 +91,17 @@ final class ShareViewController: UIViewController {
         return nil
     }
 
-    private func save(_ text: String) -> Bool {
+    private func save(_ text: String, images: [Data]) -> Bool {
         guard let dir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Self.appGroup)?
             .appendingPathComponent("Inbox", isDirectory: true) else { return false }
         do {
             try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-            let name = "\(Int(Date().timeIntervalSince1970 * 1000)).txt"
-            try text.write(to: dir.appendingPathComponent(name), atomically: true, encoding: .utf8)
+            let stem = "\(Int(Date().timeIntervalSince1970 * 1000))"
+            for (i, d) in images.prefix(4).enumerated() {
+                try d.write(to: dir.appendingPathComponent("\(stem)-\(i).jpg"))
+            }
+            // The text file is written last: the app treats it as "this share is complete".
+            try text.write(to: dir.appendingPathComponent("\(stem).txt"), atomically: true, encoding: .utf8)
             return true
         } catch {
             return false
