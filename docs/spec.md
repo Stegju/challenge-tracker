@@ -135,7 +135,23 @@ All screens: dark pixel-arcade gym look (see design README). Tab bar: Home, Year
 - Day after month end if not finalized.
 - Optional: mascot drops to tired or slumped.
 
-## 8. Imports (v1.1, not needed for 1 Jan)
+## 8. Imports
+
+**Automatic tracking per challenge (24 Nov):**
+
+| Challenge | Entry | Sessions (momentum) |
+|---|---|---|
+| Long run / long ride | longest outdoor run / ride in Health (indoor flag excluded) | runs / rides |
+| 5K run | fastest 5 km stretch inside any run (distance samples), else a 5 km run scaled | runs |
+| 2K row | a 1.98–2.2 km row, time scaled (Concept2 app → Health) | rows |
+| Bench / push-ups / pull-ups | Motra: best set of the month's chosen exercise (one entry per workout) | Motra sessions with that exercise |
+| HYROX | typed in by hand | every Health workout except strength training and boxing |
+| Murph | typed in by hand | runs, strength (incl. Motra) and HIIT |
+| The cut | typed in by hand (eye test) | none |
+
+Motra share extension: saves text, links and images to the App Group inbox; the app reads the text, then text recognized in images, then the shared web page.
+
+### Original notes
 
 - HealthKit read-only: workouts, distance, duration, heart rate, energy. Used to suggest entries and to count "other workouts" for momentum. Never auto-finalizes.
 - Motra text import. First ship a tiny share extension that only logs what Motra sends (text, link, or both). Paste is the fallback.
