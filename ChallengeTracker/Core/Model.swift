@@ -75,7 +75,7 @@ enum SlotKind: String, Codable, Sendable {
 }
 
 enum EntrySource: String, Codable, Sendable {
-    case manual, healthkit, motra
+    case manual, healthkit, motra, concept2
 
     var label: String { rawValue.uppercased() }
 }
@@ -174,6 +174,8 @@ struct Workout: Codable, Equatable, Identifiable, Sendable {
     var exercises: [ParsedExercise]?
     /// Apple Health workout UUID, for workouts that came from HealthKit.
     var healthKitId: String?
+    /// Id from another service (e.g. "c2:123417617" for a Concept2 logbook result), for de-duplication.
+    var externalId: String?
 }
 
 struct YearState: Codable, Equatable, Sendable {

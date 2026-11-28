@@ -49,9 +49,10 @@ enum HealthImport {
             return (d * 100).rounded() / 100
         case .time:
             guard let target = targetDistanceKm(ch) else { return nil }
-            if let fastest = hw.fastestStretches[target] { return fastest.rounded() }
+            // Times keep tenths (erg results are given to 0.1 s).
+            if let fastest = hw.fastestStretches[target] { return (fastest * 10).rounded() / 10 }
             guard let d = hw.distanceKm, d >= target * 0.99, d <= target * 1.10, hw.durationSeconds > 0 else { return nil }
-            return (hw.durationSeconds * target / d).rounded()
+            return (hw.durationSeconds * target / d * 10).rounded() / 10
         default:
             return nil
         }

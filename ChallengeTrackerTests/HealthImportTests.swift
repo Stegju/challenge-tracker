@@ -19,7 +19,7 @@ struct HealthImportTests {
         let ch = try #require(T.catalogue.challenge(id: "run-5k"))
         // 5.05 km in 22:13 → 5 km in 22:00
         let v = HealthImport.entryValue(hw("a", 5, km: 5.05, minutes: 22 + 13.0 / 60), challenge: ch, counted: ch.countedExercises)
-        #expect(v == 1320)
+        #expect(v == 1319.8)
         // A 10K doesn't count as a 5K attempt, and a ride doesn't count at all.
         #expect(HealthImport.entryValue(hw("b", 6, km: 10, minutes: 48), challenge: ch, counted: ch.countedExercises) == nil)
         #expect(HealthImport.entryValue(hw("c", 7, activity: "cycling", km: 5, minutes: 10), challenge: ch, counted: ch.countedExercises) == nil)
@@ -138,5 +138,56 @@ struct HealthRulesTests {
         #expect(s.workouts.first { $0.title == "Running" }?.kind == .challenge)
         #expect(s.workouts.first { $0.title == "Strength training" }?.kind == .other)
         #expect(s.entries.isEmpty)
+    }
+}
+
+@MainActor
+struct ErgTests {
+    let share = """
+    I did a 2000m Row workout in a time of 8:05.4 and wanted to share it with you.
+
+    See the details here:
+
+    https://log.concept2.com/share/3121134/123417617
+    """
+
+    @Test func parsesConcept2Share() throws {
+        let e = try #require(ErgParser.parse(share))
+        #expect(e.meters == 2000)
+        #expect(abs(e.seconds - 485.4) < 0.001)
+        #expect(e.machine == "row")
+        #expect(e.activity == "rowing")
+        #expect(e.id == "c2:123417617")
+        #expect(e.title == "2000m row · 8:05.4")
+    }
+
+    @Test func parsesTimeBasedPieceAndOtherMachines() throws {
+        let e = try #require(ErgParser.parse("I did a 30:00 SkiErg workout with a distance of 7,250m and wanted to share it."))
+        #expect(e.meters == 7250)
+        #expect(e.seconds == 1800)
+        #expect(e.machine == "ski")
+        #expect(ErgParser.parse("Check out my profile on Motra.") == nil)
+    }
+
+    @Test func pageDate() {
+        let d = ErgParser.date(inPage: "Workout\nNovember 27, 2026 6:40 pm\n2000m", calendar: T.cal)
+        #expect(d == T.cal.date(year: 2026, month: 11, day: 27, hour: 18, minute: 40))
+    }
+
+    @Test func importAddsTwoKEntryOnce() throws {
+        var s = T.fresh()
+        T.put(&s, 4, "row-2k", b: 495, t: 480)
+        let e = try #require(ErgParser.parse(share))
+        let e1 = T.engine(s, T.d(4, 10, 20))
+        try YearActions.importErg(&s, erg: e, date: T.d(4, 10, 19), engine: e1)
+        #expect(s.entries.count == 1)
+        #expect(s.entries[0].value == 485.4)
+        #expect(s.entries[0].source == .concept2)
+        #expect(s.workouts[0].kind == .challenge)
+        // Sharing the same result again replaces it.
+        let e2 = T.engine(s, T.d(4, 10, 21))
+        try YearActions.importErg(&s, erg: e, date: T.d(4, 10, 21), engine: e2)
+        #expect(s.workouts.count == 1)
+        #expect(s.entries.count == 1)
     }
 }

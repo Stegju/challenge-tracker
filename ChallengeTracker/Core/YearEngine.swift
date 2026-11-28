@@ -325,7 +325,10 @@ enum YearActions {
     /// workout again (same source, start and name) replaces the earlier copy and its entry.
     static func importWorkout(_ state: inout YearState, workout: Workout, entry: Entry?, engine: YearEngine) throws {
         var w = workout
-        if let old = state.workouts.first(where: { $0.source == w.source && $0.date == w.date && $0.title == w.title }) {
+        if let old = state.workouts.first(where: {
+            ($0.source == w.source && $0.date == w.date && $0.title == w.title)
+                || (w.externalId != nil && $0.externalId == w.externalId)
+        }) {
             w.id = old.id
             state.workouts.removeAll { $0.id == old.id }
             state.entries.removeAll { $0.workoutId == old.id && !engine.resolve($0.month).isFinal }
@@ -371,6 +374,29 @@ enum YearActions {
             entry = Entry(month: m, date: date, value: sug.value, weightKg: sug.weightKg, reps: sug.reps, source: .motra)
         }
         try importWorkout(&state, workout: workout, entry: entry, engine: engine)
+        return entry
+    }
+
+    /// Saves a Concept2 result (shared from ErgData / the logbook). Returns the entry added, if any.
+    @discardableResult
+    static func importErg(_ state: inout YearState, erg: ErgResult, date: Date, engine: YearEngine) throws -> Entry? {
+        let hw = HealthWorkout(id: erg.id ?? "", start: date, durationSeconds: erg.seconds, activity: erg.activity,
+                               distanceKm: erg.meters / 1000, indoor: true)
+        var entry: Entry? = nil
+        var isSession = false
+        if let m = engine.rules.currentMonth(now: date) {
+            let r = engine.resolve(m)
+            let counted = engine.countedExercises(m)
+            isSession = HealthImport.isSession(activity: erg.activity, challenge: r.challenge, counted: counted)
+            if r.isLocked, !r.isFinal, !r.isForfeit, let ch = r.challenge,
+               let v = HealthImport.entryValue(hw, challenge: ch, counted: counted) {
+                entry = Entry(month: m, date: date, value: v, source: .concept2)
+            }
+        }
+        let w = Workout(date: date, kind: isSession ? .challenge : .other, source: .concept2, title: erg.title,
+                        durationMinutes: erg.seconds / 60, notes: String(format: "%.2f km", erg.meters / 1000),
+                        externalId: erg.id)
+        try importWorkout(&state, workout: w, entry: entry, engine: engine)
         return entry
     }
 

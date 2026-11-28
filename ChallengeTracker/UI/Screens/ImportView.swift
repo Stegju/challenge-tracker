@@ -22,7 +22,7 @@ struct ImportView: View {
                 VStack(spacing: 6) {
                     Button("PASTE FROM CLIPBOARD") { paste() }
                         .buttonStyle(PrimaryButtonStyle())
-                    Text("Easiest: in Motra tap Share and pick this app. It's added the moment you open the app.")
+                    Text("Easiest: in Motra or ErgData tap Share and pick this app. It's added the moment you open the app.")
                         .font(.vt(18)).foregroundStyle(Palette.muted)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
@@ -88,7 +88,7 @@ struct ImportView: View {
                             HStack(spacing: 10) {
                                 VStack(alignment: .leading, spacing: 3) {
                                     HStack(spacing: 6) {
-                                        Lbl(w.source == .healthkit ? "HEALTH" : "MOTRA",
+                                        Lbl(w.source == .healthkit ? "HEALTH" : w.source.label,
                                             color: w.source == .healthkit ? Palette.infoText : Palette.lime, size: 9)
                                         Lbl(Fmt.dayTime(w.date, cal), size: 9)
                                     }
@@ -224,6 +224,14 @@ struct ImportView: View {
     }
 
     private func parse(_ text: String) {
+        if let erg = ErgParser.parse(text) {
+            if store.importErg(erg, date: store.now) {
+                draft.workout = nil
+                draft.text = ""
+                draft.error = nil
+            }
+            return
+        }
         if let w = MotraParser.parse(text, calendar: store.calendar), !w.exercises.isEmpty || w.durationMinutes != nil {
             draft.workout = w
             draft.error = nil
@@ -368,7 +376,7 @@ struct WorkoutDetailView: View {
                 HStack(spacing: 12) {
                     BackButton { dismiss() }
                     VStack(alignment: .leading, spacing: 4) {
-                        Lbl("\(w?.source == .healthkit ? "APPLE HEALTH" : "MOTRA") · \(w.map { Fmt.dayTime($0.date, cal) } ?? "")")
+                        Lbl("\(w?.source == .healthkit ? "APPLE HEALTH" : (w?.source.label ?? "")) · \(w.map { Fmt.dayTime($0.date, cal) } ?? "")")
                         Text((w?.title ?? "Workout").uppercased()).font(.heading(18)).foregroundStyle(.white).lineLimit(2)
                     }
                 }

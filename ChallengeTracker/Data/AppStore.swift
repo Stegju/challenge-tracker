@@ -167,6 +167,17 @@ final class AppStore {
         return ok
     }
 
+    /// Saves a Concept2 result into the visible year (pasted on the Import tab).
+    @discardableResult
+    func importErg(_ erg: ErgResult, date: Date) -> Bool {
+        var entry: Entry? = nil
+        let ok = mutate("Imported Concept2 \(erg.title)") { s, e in
+            entry = try YearActions.importErg(&s, erg: erg, date: date, engine: e)
+        }
+        if ok { message = "\(erg.title) saved" + (entry != nil ? ", entry added." : ".") }
+        return ok
+    }
+
     /// Applies a change to the real year (shares and Health always belong to real life).
     private func applyToReal(_ what: String, _ change: (inout YearState, YearEngine) throws -> Void) {
         var s = real
@@ -216,6 +227,21 @@ final class AppStore {
                 let joined = ocr.joined(separator: "\n")
                 AppLog.add("Share image text: \(joined.prefix(300))")
                 candidates.append(("image", joined))
+            }
+
+            // Concept2 (ErgData / logbook) shares carry the result in the text itself.
+            if let erg = ErgParser.parse(body) {
+                var date = Date()
+                if let link = erg.link, let page = await ShareReader.pageText(link),
+                   let d = ErgParser.date(inPage: page, calendar: calendar), d <= Date() {
+                    date = d
+                }
+                var entry: Entry? = nil
+                applyToReal("Imported Concept2 \(erg.title)") { s, e in
+                    entry = try YearActions.importErg(&s, erg: erg, date: date, engine: e)
+                }
+                message = "\(erg.title) imported" + (entry != nil ? ", entry added." : ".")
+                continue
             }
 
             var parsed: ParsedWorkout? = nil
